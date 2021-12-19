@@ -11,8 +11,8 @@ const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 function App() {
 //   const [greeting, setGreetingValue] = useState()
-  const [image, setImage] = useState()
-  const [proof, setProof] = useState()
+  const [image, setImage] = useState("")
+  const [proof, setProof] = useState("")
   const [publicSignal, setPublicSignal] = useState()
   const [isVerified, setIsVerified] = useState(false);
 
@@ -21,8 +21,8 @@ function App() {
   }
 
   async function publishProof() {
-      let imageVec = image.slice(1,-1);
-      imageVec = imageVec.split(', ')
+    let imageVec = image.slice(1,-1);
+    imageVec = imageVec.split(', ') // array of strings of numbers
     if (typeof window.ethereum !== 'undefined') {
         const { proof, publicSignals } = await generateProof(imageVec)
         setPublicSignal(publicSignals);
@@ -31,6 +31,7 @@ function App() {
   }
 
   async function verifyProof() {
+    // console.log(typeof proof);
     if (typeof window.ethereum !== 'undefined') {
       await requestAccount();
       const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -50,8 +51,12 @@ function App() {
     <div className="App">
       <header className="App-header">
 
-        <p>Set Image vector (format [a, b, c])</p>
-        <input onChange={e => setImage(e.target.value)} placeholder="[1, 2, 3]" />
+        <p>Set Image vector (format [a, b, c], with a space after each comma)</p>
+        <input onChange={e => setImage(e.target.value)}
+           placeholder="[383, 382, 991, 948, 906, 978,  55, 526, 807, 799,  46, 646, 676,
+    275, 952, 932, 175, 979, 717, 100, 919, 734, 107, 159, 395,  53,
+    179,  59, 381,  22, 384, 530, 835, 104, 171, 583, 902, 548,  91,
+    110, 334, 938, 547, 294, 125, 356, 811, 190, 902, 245]" />
         <p></p>
         <button onClick={publishProof}>Generate Proof</button>
         <p></p>

@@ -1,15 +1,116 @@
 pragma circom 2.0.2;
 
-/*This circuit template checks that c is the multiplication of a and b.*/  
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/switcher.circom";
 
-template DigitReader (n) {  
+template ArgMax (n) {
+    signal input in[n];
+    signal output out;
+    component gts[n];        // store comparators
+    component switchers[n+1];  // switcher for comparing maxs
+    component aswitchers[n+1]; // switcher for arg max
 
-   // Declaration of signals.  
-   signal input image[n];  
-   signal output digit;  
+    signal maxs[n+1];
+    signal amaxs[n+1];
 
-   // Constraints.  
-   digit <== image[0] * image[1];  
+    maxs[0] <== in[0];
+    amaxs[0] <== 0;
+    for(var i = 0; i < n; i++) {
+        gts[i] = GreaterThan(20);
+        switchers[i+1] = Switcher();
+        aswitchers[i+1] = Switcher();
+
+        gts[i].in[1] <== maxs[i];
+        gts[i].in[0] <== in[i];
+
+        switchers[i+1].sel <== gts[i].out;
+        switchers[i+1].L <== maxs[i];
+        switchers[i+1].R <== in[i];
+        
+        aswitchers[i+1].sel <== gts[i].out;
+        aswitchers[i+1].L <== amaxs[i];
+        aswitchers[i+1].R <== i;
+        amaxs[i+1] <== aswitchers[i+1].outL;
+        maxs[i+1] <== switchers[i+1].outL;
+    }
+
+    out <== amaxs[n];
 }
 
- component main = DigitReader(3);
+// image is non-negative 50x1 shape matrix, output from prior NN layers 
+// A is final layer of NN, ndigitsx50 shape matrix
+template DigitReader (n) {
+    signal input image[n]; // must be non-negative
+    signal output digit;
+    var ndigits = 10;
+    var A[ndigits][n] = [[  35,  -13,  -98,   81,   87,   93,  -81,   27,  -27,   68,   88,
+         -56,   60,   20,   53,  -50,   13,  -33,   54,  -78,  -62,   83,
+          44,  -50,   70,    5,   59,  -31,  -24,   83,   57,  -90,   57,
+         -94,   98,  -91,  -86,   43,   39,   62,  -54,  -63,  -44,  -71,
+          24,  -71,   47,   73,   30,   -9],
+       [ -77,  -50,  -99,   45,  -11,   54,  -44,   36,   56,  -60,   46,
+         -10,    5,  -48,  -35,   71,   54,  -28,   43,    3,   76,  -54,
+          52,  -65,   92,  -40,   42,   75,  -29,   95,  -52,  -18,  -32,
+         -10,   48,   80,   42,   46,  -71,  -23,   81,   28,  -49,  -27,
+         -92,  -76,   11,    1,   56,  -56],
+       [ -77,   74,   58,  -23,   39,  -27,  -27,   91,   22,  -30,  -97,
+         -73,  -97,  -30,   40,  -25,  -25,  -33,   67,   95,   26,   15,
+          25,  -28,   92,   -1,   71,  -38,    3,  -29,   72,  -71,   70,
+          37,   65,   99,  -55,  -58,   41,    2,   38,   82,  -57,   25,
+         -33,   32,  -69,   80,   42,   90],
+       [  21,  -36,   71,   27,   54,    8,  -22,  -64,  -84,    6,  -77,
+          57,   -7,    9,   60,  -87,   44,   43,  -28,   53,  -78,  -96,
+          10,   80,  -73,  -61,  -48,  -21,  -15,  -12,   62,  -73, -100,
+         -92,   23,   69,   49,  -65,  -29,  -45,  -43,  -70,  -45,   55,
+          73,  -38,  -72,   26,   73,  -42],
+       [ -93,   76,  -26,  -94,   38,  -39,   32,   11,  -47,  -53,  -87,
+          63,  -47,   -4,  -68,   13, -100,   57,   79,  -64,   29,  -37,
+         -87,  -65,  -31,   43,  -30,  -54,    9,   -6,   71,  -94,   35,
+          41,   70,  -35,   70,  -76,  -61,  -71,   63,  -96,  -10,   23,
+          50,   69,  -41,   -4,  -85,  -27],
+       [  86,   64,   79,   11,   28,   52,  -64,   40,   80,   56,  -32,
+          19,  -31,   48,   77,  -67,   29,   95,   -7,   43,  -64,    8,
+          -3,   10,   80,    8,   -3,   79,   71,  -73,   -8,   37,  -30,
+         -18,   67,   87,  -37,   42,  -72,  -16,   -9,  -12,   37,   43,
+         -16,  -68,  -73,  -98,  -49,  -60],
+       [  39,  -12,  -76,  -74,   -3,   33,   21,  -68,  -51,  -72,   58,
+           6,  -58,   19,   -7,   54,  -54,  -83,  -18,  -86,   59,   61,
+          23,   29,  -74,   71,   62,   75,  -53,   33,   32,  -78,   14,
+          35,  -57,  -91,   66,  -87,   40,   75,   37,  -35,    0,   90,
+         -27,  -96,   49,   41,  -69,   56],
+       [  64,   68,   43,   36, -100,   47,  -19,   46,   97,   96,  -80,
+          13,   -7,   17,   23,  -38,   40,   44,  -32,   43,  -87,   68,
+          60,   22,   18,   75,  -50,   62,  -61,  -23,   21,   36,   23,
+          91,  -85,  -42, -100,  -85,  -12,   76,  -66,  -23,  -20,   24,
+          90,  -12,   87,    0,   46,   95],
+       [  84,  -32,   -8,   63,  -31,  -63,   13,  -17,  -63,   -9,  -72,
+          22,  -54,  -95,   31,  -16,   87,   39,   21,  -13,   17,  -13,
+          61,   85,  -37,  -61,    7,   81,   18,  -70,   53,   75,   58,
+          74,  -91,   50,   52,   85,   76,   60,   -7,   96,   39,  -27,
+          52,  -36,  -15,  -59,  -82,   74],
+       [ -22,   57,  -68,    3,   31,   43,  -88,  -92,  -64,   85,  -20,
+         -83,   72,   19,    8,   16,  -29,  -49,  -32,  -62,  -15,  -74,
+         -94,  -68,  -68,  -23,   34,  -29,   29,  -83,   60,  -61,   90,
+         -78,   23,  -86,  -27,   57,  -75,  -44,  -39,   54,   66,   53,
+          37,  100,   79,  -22,    4,   43]];
+    signal s[ndigits][n+1];
+    component am = ArgMax(ndigits);
+    for(var i=0; i<ndigits; i++){
+        s[i][0] <== 0;
+        for(var j=1; j<=n; j++){
+            s[i][j] <== s[i][j-1] + A[i][j-1]*image[j-1];
+        }
+        am.in[i] <== s[i][n];
+    }
+    am.out ==> digit;
+}
+
+component main = DigitReader(50);
+
+/* INPUT = {
+    "image": [7, 3, 12, 34, 2, 11, 22]
+} */
+
+//     "image": [7, 3, 56, 34, 2, 11, 34]
+//     "image": [7, 3, 12, 34, 2, 11, 22]
+
