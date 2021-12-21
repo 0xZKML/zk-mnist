@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ethers } from 'ethers'
 import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
 import snarkjs from 'snarkjs';
@@ -11,24 +11,51 @@ const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 function App() {
 //   const [greeting, setGreetingValue] = useState()
-  const [image, setImage] = useState("")
   const [proof, setProof] = useState("")
   const [publicSignal, setPublicSignal] = useState()
   const [isVerified, setIsVerified] = useState(false);
+  const [rawImageVec, setRawImageVec] = useState();
+  const [imageVec, setImageVec] = useState([]);
+  const canvasRef = useRef(null)
 
   async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
   }
 
   async function publishProof() {
-    let imageVec = image.slice(1,-1);
-    imageVec = imageVec.split(', ') // array of strings of numbers
     if (typeof window.ethereum !== 'undefined') {
-        const { proof, publicSignals } = await generateProof(imageVec)
-        setPublicSignal(publicSignals);
-        setProof(proof);
+        if(imageVec.length > 0) {
+          const { proof, publicSignals } = await generateProof(imageVec)
+          setPublicSignal(publicSignals);
+          setProof(proof);
+        } else {
+          console.error("image vector not initialized")
+        }
     }
   }
+
+  async function uploadImage(imageFile) {
+    const im = new Image();
+    im.src = URL.createObjectURL(imageFile)
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')
+    im.onload = () => {
+      context.drawImage(im, 0, 0, 28, 28)
+      setRawImageVec(context.getImageData(0, 0, 28, 28).data);
+    }
+  }
+
+  async function processImage() {
+    let data = new Array(784)
+    console.log(rawImageVec)
+    for (var i = 0; i < rawImageVec.length; i += 4) {
+      var avg = (rawImageVec[i] + rawImageVec[i + 1] + rawImageVec[i + 2]) / 3;
+      data[i/4] = avg
+    }
+    setImageVec(data)
+    console.log(data)
+  }
+
 
   async function verifyProof() {
     // console.log(typeof proof);
@@ -51,16 +78,16 @@ function App() {
     <div className="App">
       <header className="App-header">
 
-        <p>Set Image vector (format [a, b, c], with a space after each comma)</p>
-        <input onChange={e => setImage(e.target.value)}
-           placeholder="[383, 382, 991, 948, 906, 978,  55, 526, 807, 799,  46, 646, 676,
-    275, 952, 932, 175, 979, 717, 100, 919, 734, 107, 159, 395,  53,
-    179,  59, 381,  22, 384, 530, 835, 104, 171, 583, 902, 548,  91,
-    110, 334, 938, 547, 294, 125, 356, 811, 190, 902, 245]" />
+        <p>Upload image file</p>
+        <input type="file" name="image" onChange={e => uploadImage(e.target.files[0])}></input>
+        <p></p>
+        <canvas ref={canvasRef}  width={28} height={28}/>
+        <p></p>
+        <button onClick={processImage}>Process Image</button>
         <p></p>
         <button onClick={publishProof}>Generate Proof</button>
         <p></p>
-        <button onClick={verifyProof}>Verify Proof></button>
+        <button onClick={verifyProof}>Verify Proof</button>
         <p>Note: the verifier requires being connected to the chain</p>
         <h3>Output</h3>
         <p>Is verified: {JSON.stringify(isVerified)}</p>
