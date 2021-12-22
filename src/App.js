@@ -67,7 +67,7 @@ function App() {
             }
         }
         setImage(out);
-        console.log('in handleChangeData, '+out);
+        // console.log('in handleChangeData, '+out);
     }
 
 
