@@ -1,4 +1,4 @@
-function zeros(m, n) {
+export function zeros(m, n) {
     return Array(m).fill(null).map(() => Array(n).fill(0));
 }
 
