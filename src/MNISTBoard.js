@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { matmul, matPlusVec, zeros, vecPlusVec, matByVec, argMax } from './matutils';
 import { INPUT } from './const';
 import './MNISTBoard.css';
 
-function GridSquare(row, col, grid, handleReset, mouseDown) {
+function GridSquare(row, col, grid, handleReset, mouseDown, onChange) {
     const [on, setOn] = useState(false);
     handleReset(() => {reset(0)});
 
@@ -12,14 +12,17 @@ function GridSquare(row, col, grid, handleReset, mouseDown) {
         grid[row][col] = val;
     }
 
+    function handleChange() {
+        if (mouseDown) {
+            setOn(true);
+            // grid[row][col] = 1;
+            onChange(row,col)
+        }
+    }
+
     return (
         <div className={"square" + (on ? " on" : " off")}
-            onMouseEnter={() => {
-                if (mouseDown) {
-                    setOn(true);
-                    grid[row][col] = 1;
-                }
-            }}
+            onMouseEnter={() => handleChange()}
         >
         </div>
     );
@@ -29,10 +32,10 @@ export default function MNISTBoard(props) {
     const [mouseDown, setMouseDown] = useState(false);
     const [predClass, setPredClass] = useState(null);
     const [resetHandlers, setResetHandlers] = useState([]);
-    const onChange = props.onChange;
 
     const size = 28;
-    var grid = Array(size).fill(null).map(_ => Array(size).fill(0));
+    const grid = props.grid;
+    // var grid = Array(size).fill(null).map(_ => Array(size).fill(0));
     //     this.valueUpdaters = Array(this.size).fill(null).map(() => Array(this.size).fill( _ => {})); // init as no-ops
 
     //     this.input = INPUT;
@@ -56,11 +59,9 @@ export default function MNISTBoard(props) {
         setMouseDown(false);
     }
 
-    function classify() {
-        var imgVec = grid.flat(); 
-        // var ypred = vecPlusVec(matByVec(this.weight, imgVec), this.bias); 
-        // var pred = argMax(ypred);
-        setPredClass(8);
+    function onSqChange(myrow, mycol) {
+        grid[myrow][mycol] = 1;
+        props.onChange()
     }
 
     function renderRow(row) {
@@ -69,7 +70,7 @@ export default function MNISTBoard(props) {
         for (var col=0; col < size; col++) {
             rowCols.push([row, col]);
             mygrid.push(
-                <div>{GridSquare(row, col, grid, bindResetHandler, mouseDown)}</div>
+                <div>{GridSquare(row, col, grid, bindResetHandler, mouseDown, onSqChange)}</div>
             );
         }   
         return (
@@ -115,9 +116,6 @@ export default function MNISTBoard(props) {
                 {RenderGrid()}
             </div>
             <div>
-                <button onClick={() => {classify();}}>
-                    Classify
-                </button>
                 <button onClick={() => {reset()}}>
                 Reset image
                 </button>
