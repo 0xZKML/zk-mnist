@@ -3,13 +3,13 @@ import { matmul, matPlusVec, zeros, vecPlusVec, matByVec, argMax } from './matut
 import { INPUT } from './const';
 import './MNISTBoard.css';
 
-function GridSquare(row, col, grid, handleReset, mouseDown, onChange) {
+function GridSquare(row, col, handleReset, mouseDown, onChange) {
     const [on, setOn] = useState(false);
     handleReset(() => {reset(0)});
 
     function reset(val) {
         setOn(val);
-        grid[row][col] = val;
+        // grid[row][col] = val;
     }
 
     function handleChange() {
@@ -34,7 +34,6 @@ export default function MNISTBoard(props) {
     const [resetHandlers, setResetHandlers] = useState([]);
 
     const size = 28;
-    const grid = props.grid;
     // var grid = Array(size).fill(null).map(_ => Array(size).fill(0));
     //     this.valueUpdaters = Array(this.size).fill(null).map(() => Array(this.size).fill( _ => {})); // init as no-ops
 
@@ -60,8 +59,7 @@ export default function MNISTBoard(props) {
     }
 
     function onSqChange(myrow, mycol) {
-        grid[myrow][mycol] = 1;
-        props.onChange()
+        props.onChange(myrow, mycol)
     }
 
     function renderRow(row) {
@@ -70,7 +68,7 @@ export default function MNISTBoard(props) {
         for (var col=0; col < size; col++) {
             rowCols.push([row, col]);
             mygrid.push(
-                <div>{GridSquare(row, col, grid, bindResetHandler, mouseDown, onSqChange)}</div>
+                <div>{GridSquare(row, col, bindResetHandler, mouseDown, onSqChange)}</div>
             );
         }   
         return (

@@ -19,7 +19,7 @@ function App() {
     const [publicSignal, setPublicSignal] = useState()
     const [isVerified, setIsVerified] = useState(false);
     const size=28;
-    const grid = Array(size).fill(null).map(_ => Array(size).fill(0));
+    const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0)));
 
     
 
@@ -54,26 +54,33 @@ function App() {
         }    
     }
 
-    function handleChangeData(){
+    function handleChangeData(myrow,mycol){
+        // console.log('handleChangeData ',grid[0]);
+        var newArray = [];
+        for (var i = 0; i < grid.length; i++)
+            newArray[i] = grid[i].slice();
+        newArray[myrow][mycol]=1;
+        setGrid(newArray);
+
         var out='[';
         for(var i=0;i<size; i++) {
             for(var j=0;j<size;j++) {
                 if(!(i==size-1 && j==size-1)){
-                    out = out + grid[i][j] + ', ';
+                    out = out + newArray[i][j] + ', ';
                 }
                 else {
-                    out = out + grid[i][j] + ']';
+                    out = out + newArray[i][j] + ']';
                 }
             }
         }
         setImage(out);
-        // console.log('in handleChangeData, '+out);
+        console.log('in handleChangeData, '+out);
     }
 
 
   return (
     <div className="App">
-      <MNISTBoard onChange={() => handleChangeData()} grid={grid} />
+      <MNISTBoard onChange={(r,c) => handleChangeData(r,c)}  />
 
       <header className="App-header">
         <p></p>
