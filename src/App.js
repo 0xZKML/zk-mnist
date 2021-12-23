@@ -31,11 +31,31 @@ function App() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     }
 
-    async function publishProof() {
-        if (typeof window.ethereum !== 'undefined') {
+    async function doProof() {
+      console.log(image)
+      const session = await InferenceSession.create(
+        "http://localhost:3000/trimmed_convet.onnx",
+        {
+          executionProviders: ["wasm"],
+        }
+      );
+
+      const data = Float32Array.from(image)
+      console.log(data)
+      const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
+      console.log(tensor)
+      const feeds = { input: tensor};
+      const results = await session.run(feeds);
+      const embeddingResult = results.output.data;
+      console.log(embeddingResult)
+      var tempQuantizedEmbedding = new Array(50)
+      for (var i = 0; i < 50; i++)
+        tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
+
+      if (typeof window.ethereum !== 'undefined') {
           console.log('generate proof with')
-          console.log(quantizedEmbedding)
-            const { proof, publicSignals } = await generateProof(quantizedEmbedding)
+          console.log(tempQuantizedEmbedding)
+            const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
             setPublicSignal(publicSignals);
             setProof(proof);
         }
@@ -56,29 +76,6 @@ function App() {
             console.log(err)
         }
         }    
-    }
-
-    async function calcEmbedding() {
-      console.log(image)
-      const session = await InferenceSession.create(
-        "http://localhost:3000/trimmed_convet.onnx",
-        {
-          executionProviders: ["wasm"],
-        }
-      );
-      const data = Float32Array.from(image)
-      console.log(data)
-      const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
-      console.log(tensor)
-      const feeds = { input: tensor};
-      const results = await session.run(feeds);
-      const embeddingResult = results.output.data;
-      console.log(embeddingResult)
-      var tempQuantizedEmbedding = new Array(50)
-      for (var i = 0; i < 50; i++)
-        tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
-
-      setQuantizedEmbedding(tempQuantizedEmbedding)
     }
 
     async function myReset() {
@@ -104,17 +101,16 @@ function App() {
       <MNISTBoard onChange={(r,c) => handleChangeData(r,c)}  />
 
       <header className="App-header">
-        <p></p>
         <button onClick={myReset}>
         Reset Data
         </button>
-        <p></p>
-        <button onClick={calcEmbedding}>
+        <p><br></br></p>
+        {/* <button onClick={calcEmbedding}>
            Compute Embeddings 
         </button>
-        <p></p>
-        <button onClick={publishProof}>
-            Capture and publish proof
+        <p></p> */}
+        <button onClick={doProof}>
+        Capture image, compute embeddings, and generate zk proof
         </button>
 
         <p></p>
