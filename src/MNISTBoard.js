@@ -118,7 +118,6 @@ export default function MNISTBoard(props) {
                 Reset image
                 </button>
             </div>
-            {renderClassifiedResult()}
         </div>
     )
 }

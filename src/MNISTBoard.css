@@ -4,7 +4,7 @@ main {
     line-height: 100vh;
   }
   .MNISTBoard {
-      margin-left: 0.5cm
+      margin-left: 0cm
   }
   .square {
       float:left;
