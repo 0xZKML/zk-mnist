@@ -8,9 +8,10 @@ This draws heavily from 0xJOF's [zk learning in public](https://github.com/JofAr
 
 ## Current Functionality:
 
-1) input a vector as a string format (need to replace this ASAP with image upload + preproc)
-2) generate proof in-browser using snarkjs 
-3) verify proof on-chain using ethers + snarkjs
+1) draw a digit
+2) pass the digit through 2 conv layers and one FC layer in browser, generating a dim 50 embedding
+3) generate a ZKsnark proof in browser that the embedding represents a given digit
+4) verify proof on-chain using ethers + snarkjs
 
 ## How to run it locally:
 
