@@ -1,6 +1,7 @@
 # About
 
 zk-MNIST scaffold app.
+Authors: @horacepan @sunfishstanford @henripal
 
 This project is part of [0xPARC](https://0xparc.org/blog/program-for-applied-research)'s winter 2021 applied zk learning group
 
