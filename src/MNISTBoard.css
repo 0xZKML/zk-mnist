@@ -1,0 +1,31 @@
+main {
+    text-align: center;
+    vertical-align: center;
+    line-height: 100vh;
+  }
+  .MNISTBoard {
+      margin-left: 0cm
+  }
+  .square {
+      float:left;
+      position: relative;
+      width:1vw;
+      height:1vw;
+      //padding-bottom : 30%; /* = width for a 1:1 aspect ratio */
+      margin:0%;
+      background-color:#1E1E1E;
+      overflow:hidden;
+      border:1px solid black;
+  }
+  .square.off {
+      background-color:#FFFFFF;
+  }
+  
+  .square.on {
+      background-color:#1E1E1E;
+  }
+  
+  .grid {
+      display: flex;
+      flex-direction: column
+  }

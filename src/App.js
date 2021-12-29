@@ -1,59 +1,118 @@
-import { useState } from 'react';
+import React, { useState, useRef, createRef} from 'react'
+import './App.css'
+import MNISTBoard from './MNISTBoard.js';
+
 import { ethers } from 'ethers'
 import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
 import snarkjs from 'snarkjs';
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
-
 import path from 'path';
+import './App.css';
 // import Token from './artifacts/contracts/Token.sol/Token.json'
+import { Tensor, InferenceSession } from "onnxruntime-web";
 
-const verifierAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3"
+
+
+const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 function App() {
-//   const [greeting, setGreetingValue] = useState()
-  const [image, setImage] = useState()
-  const [proof, setProof] = useState()
-  const [publicSignal, setPublicSignal] = useState()
-  const [isVerified, setIsVerified] = useState(false);
+    //   const [greeting, setGreetingValue] = useState()
+    const [image, setImage] = useState([])
+    const [quantizedEmbedding, setQuantizedEmbedding] = useState([])
+    const [proof, setProof] = useState("")
+    const [publicSignal, setPublicSignal] = useState()
+    const [isVerified, setIsVerified] = useState(false);
+    const size=28;
+    const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0)));
 
-  async function requestAccount() {
+    
+
+    async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
-  }
-
-  async function publishProof() {
-      let imageVec = image.slice(1,-1);
-      imageVec = imageVec.split(', ')
-    if (typeof window.ethereum !== 'undefined') {
-        const { proof, publicSignals } = await generateProof(imageVec)
-        setPublicSignal(publicSignals);
-        setProof(proof);
     }
-  }
 
-  async function verifyProof() {
-    if (typeof window.ethereum !== 'undefined') {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
-      const callArgs = await buildContractCallArgs(proof, publicSignal)
-      try {
-        const result = await verifier.verifyProof(...callArgs)
-        console.log(result)
-        setIsVerified(result)
-      } catch(err) {
-          console.log(err)
-      }
-    }    
-  }
+    async function doProof() {
+      console.log(image)
+      const session = await InferenceSession.create(
+        "http://localhost:3000/trimmed_convet.onnx",
+        {
+          executionProviders: ["wasm"],
+        }
+      );
+
+      const data = Float32Array.from(image)
+      console.log(data)
+      const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
+      console.log(tensor)
+      const feeds = { input: tensor};
+      const results = await session.run(feeds);
+      const embeddingResult = results.output.data;
+      console.log(embeddingResult)
+      var tempQuantizedEmbedding = new Array(50)
+      for (var i = 0; i < 50; i++)
+        tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
+
+      if (typeof window.ethereum !== 'undefined') {
+          console.log('generate proof with')
+          console.log(tempQuantizedEmbedding)
+            const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
+            setPublicSignal(publicSignals);
+            setProof(proof);
+        }
+    }
+
+    async function verifyProof() {
+    // console.log(typeof proof);
+        if (typeof window.ethereum !== 'undefined') {
+        await requestAccount();
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
+        const callArgs = await buildContractCallArgs(proof, publicSignal)
+        try {
+            const result = await verifier.verifyProof(...callArgs)
+            console.log(result)
+            setIsVerified(result)
+        } catch(err) {
+            console.log(err)
+        }
+        }    
+    }
+
+    async function myReset() {
+      setGrid(Array(size).fill(null).map(_=> Array(size).fill(0)));
+      setImage([])
+
+    }
+
+    function handleChangeData(myrow,mycol){
+        // console.log('handleChangeData ',grid[0]);
+        var newArray = [];
+        for (var i = 0; i < grid.length; i++)
+            newArray[i] = grid[i].slice();
+        newArray[myrow][mycol]=1;
+        setGrid(newArray);
+
+        setImage(newArray.flat());
+    }
+
 
   return (
     <div className="App">
-      <header className="App-header">
+      <MNISTBoard onChange={(r,c) => handleChangeData(r,c)}  />
 
-        <p>Set Image vector (format [a, b, c])</p>
-        <input onChange={e => setImage(e.target.value)} placeholder="[1, 2, 3]" />
-        <p></p>
-        <button onClick={publishProof}>Generate Proof</button>
+      <header className="App-header">
+        <button onClick={myReset}>
+        Reset Data
+        </button>
+        <p><br></br></p>
+        {/* <button onClick={calcEmbedding}>
+           Compute Embeddings 
+        </button>
+        <p></p> */}
+        <button onClick={doProof}>
+        Capture image, compute embeddings, and generate zk proof
+        </button>
+
         <p></p>
         <button onClick={verifyProof}>Verify Proof></button>
         <p>Note: the verifier requires being connected to the chain</p>
