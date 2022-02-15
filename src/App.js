@@ -17,15 +17,18 @@ const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 function App() {
     //   const [greeting, setGreetingValue] = useState()
-    const [image, setImage] = useState([])
     const [quantizedEmbedding, setQuantizedEmbedding] = useState([])
     const [proof, setProof] = useState("")
     const [publicSignal, setPublicSignal] = useState()
     const [isVerified, setIsVerified] = useState(false);
     const size=28;
-    const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0)));
-
-    
+    const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
+    const [image, setImage] = useState([]); // the image array will eventually be a flattened version of grid (the 2-dim array)
+    const strokeSize=3;
+    var stroke = [];
+    stroke.push([0.2,0.5,0.2]);
+    stroke.push([0.5,1,0.5]);
+    stroke.push([0.,0.5,0.2]);
 
     async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -58,7 +61,10 @@ function App() {
             const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
             setPublicSignal(publicSignals);
             setProof(proof);
-        }
+      }
+      else {
+        console.log(window.ethereum)
+      }
     }
 
     async function verifyProof() {
@@ -78,21 +84,23 @@ function App() {
         }    
     }
 
-    async function myReset() {
-      setGrid(Array(size).fill(null).map(_=> Array(size).fill(0)));
-      setImage([])
-
-    }
-
     function handleChangeData(myrow,mycol){
-        // console.log('handleChangeData ',grid[0]);
         var newArray = [];
         for (var i = 0; i < grid.length; i++)
             newArray[i] = grid[i].slice();
         newArray[myrow][mycol]=1;
         setGrid(newArray);
 
-        setImage(newArray.flat());
+        // transpose the array, because the drawing is transposed
+        var newT = [];
+        for(var i=0; i<grid.length; i++)
+          newT.push([]);
+        for(var i=0; i<grid.length; i++){
+          for(var j=0; j<grid.length; j++)
+            newT[j].push(newArray[i][j]);
+        }
+        
+        setImage(newT.flat());
     }
 
 
@@ -101,25 +109,23 @@ function App() {
       <MNISTBoard onChange={(r,c) => handleChangeData(r,c)}  />
 
       <header className="App-header">
-        <button onClick={myReset}>
-        Reset Data
-        </button>
-        <p><br></br></p>
-        {/* <button onClick={calcEmbedding}>
-           Compute Embeddings 
-        </button>
-        <p></p> */}
-        <button onClick={doProof}>
-        Capture image, compute embeddings, and generate zk proof
-        </button>
+        <div className='boardText'>
+          <button className="button" onClick={doProof}>
+            Capture image, compute embeddings, and generate zk proof
+          </button>
+        </div>
+
 
         <p></p>
-        <button onClick={verifyProof}>Verify Proof></button>
+        <div className='boardText'>
+          <button className='button'
+            onClick={verifyProof}>Verify Proof</button>
+        </div>
+        <h1>Output</h1>
+        <h2> Recognized Digit: {publicSignal}</h2>
+        <h4> Proof: {JSON.stringify(proof)}</h4>
+        <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
         <p>Note: the verifier requires being connected to the chain</p>
-        <h3>Output</h3>
-        <p>Is verified: {JSON.stringify(isVerified)}</p>
-        <p> Recognized Digit: {publicSignal}</p>
-        <p> Proof: {JSON.stringify(proof)}</p>
       </header>
     </div>
   );

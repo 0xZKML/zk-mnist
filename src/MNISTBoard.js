@@ -100,22 +100,26 @@ export default function MNISTBoard(props) {
 
     return (
         <div className="MNISTBoard"
-        onMouseDown={() => {
-            setMouseDown(true);
-        }}
-        onMouseUp={() => {
-            setMouseDown(false);
-        }}
+            onMouseDown={() => {
+                setMouseDown(true);
+            }}
+            onMouseUp={() => {
+                setMouseDown(false);
+            }}
         >
-            <div className="grid">
-                <div>
-                    Draw and classify a digit
-                </div>
-                {RenderGrid()}
+            <div className="boardText">
+                Draw and classify a digit
             </div>
-            <div>
-                <button onClick={() => {reset()}}>
-                Reset image
+            <div className="boardObject">
+                <div className="grid">
+                    {RenderGrid()}
+                </div>
+            </div>
+            <div className='boardText'>
+                <button className="button" 
+                    onClick={() => {reset()}}
+                >
+                    Reset image
                 </button>
             </div>
         </div>

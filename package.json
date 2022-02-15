@@ -10,7 +10,7 @@
     "upgradedeps": "ncu -u --reject @types/node",
     "contracts:test": "npx hardhat test tests/contracts.test.ts",
     "zk:ptau": "cd zk && sh ptau.sh",
-    "zk:compile": "cd zk && sh compile.sh"
+    "zk:compile": "cd zk && zsh compile.sh"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",

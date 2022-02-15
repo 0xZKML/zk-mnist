@@ -2,30 +2,49 @@ main {
     text-align: center;
     vertical-align: center;
     line-height: 100vh;
-  }
-  .MNISTBoard {
-      margin-left: 0cm
-  }
-  .square {
+}
+.MNISTBoard {
+    /* margin-left: 0cm */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.boardText {
+    display: flex;
+    justify-content: center;
+    font-size: 3vw;
+}
+.boardObject {
+    /* margin-left: 0cm */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.square {
       float:left;
       position: relative;
       width:1vw;
       height:1vw;
-      //padding-bottom : 30%; /* = width for a 1:1 aspect ratio */
       margin:0%;
       background-color:#1E1E1E;
       overflow:hidden;
       border:1px solid black;
-  }
-  .square.off {
+}
+.square.off {
       background-color:#FFFFFF;
-  }
+}
   
-  .square.on {
+.square.on {
       background-color:#1E1E1E;
-  }
+}
   
-  .grid {
+.grid {
       display: flex;
-      flex-direction: column
-  }
+      flex-direction: row
+}
+
+.button {
+    display: flex;
+    text-align: center;
+    font-size: 1.5vw;
+}
