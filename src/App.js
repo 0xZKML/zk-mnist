@@ -1,6 +1,7 @@
 import React, { useState, useRef, createRef} from 'react'
 import './App.css'
 import MNISTBoard from './MNISTBoard.js';
+import MNISTDigits from './MNISTDigits.js';
 
 import { ethers } from 'ethers'
 import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
@@ -10,40 +11,37 @@ import path from 'path';
 import './App.css';
 // import Token from './artifacts/contracts/Token.sol/Token.json'
 import { Tensor, InferenceSession } from "onnxruntime-web";
-
+import {DIGIT} from './mnistpics';
 
 
 const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 function App() {
-    //   const [greeting, setGreetingValue] = useState()
     const [quantizedEmbedding, setQuantizedEmbedding] = useState([])
     const [proof, setProof] = useState("")
     const [publicSignal, setPublicSignal] = useState()
     const [isVerified, setIsVerified] = useState(false);
     const size=28;
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
-    const [image, setImage] = useState([]); // the image array will eventually be a flattened version of grid (the 2-dim array)
-    const strokeSize=3;
-    var stroke = [];
-    stroke.push([0.2,0.5,0.2]);
-    stroke.push([0.5,1,0.5]);
-    stroke.push([0.,0.5,0.2]);
+    const [image, setImage] = useState([]); // the image array (which is a 1-d array) will eventually be a flattened version of grid (the 2-dim array)
+    const mydigit=17    
 
     async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     }
 
     async function doProof() {
-      console.log(image)
+      console.log(image);
       const session = await InferenceSession.create(
         "http://localhost:3000/trimmed_convet.onnx",
         {
           executionProviders: ["wasm"],
         }
       );
+      // const data = Float32Array.from(image) // restore this line if we are reading from the hand drawn digit
 
-      const data = Float32Array.from(image)
+      const data = DIGIT.weight[mydigit]; // keep this line if we are inserting an image of a digit via the sampleDigits.tsx file
+
       console.log(data)
       const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
       console.log(tensor)
@@ -114,6 +112,8 @@ function App() {
             Capture image, compute embeddings, and generate zk proof
           </button>
         </div>
+
+      <MNISTDigits sel={mydigit} />
 
 
         <p></p>
