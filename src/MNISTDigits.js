@@ -20,9 +20,11 @@ export default function MNISTDigits(props) {
         setImgUrl(dataURI);        
     };
 
-    useEffect(() => {
+    useEffect(
+        () => {
         getImg();
-        }, []);
+        }
+        , []);
 
     return (
         <div>

@@ -34,14 +34,6 @@ export default function MNISTBoard(props) {
     const [resetHandlers, setResetHandlers] = useState([]);
 
     const size = 28;
-    // var grid = Array(size).fill(null).map(_ => Array(size).fill(0));
-    //     this.valueUpdaters = Array(this.size).fill(null).map(() => Array(this.size).fill( _ => {})); // init as no-ops
-
-    //     this.input = INPUT;
-    //     this.weight = this.input.weight;
-    //     this.bias = this.input.bias;
-    //     this.decimal_places = this.input.decimal_places;
-    //     console.log(this.bias)
 
     const bindResetHandler = (func) => {
         resetHandlers.push(func);
