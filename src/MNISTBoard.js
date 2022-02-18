@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { matmul, matPlusVec, zeros, vecPlusVec, matByVec, argMax } from './matutils';
 import { INPUT } from './const';
-import './MNISTBoard.css';
+import './MNIST.css';
 
 function GridSquare(row, col, handleReset, mouseDown, onChange) {
     const [on, setOn] = useState(false);
@@ -30,7 +30,6 @@ function GridSquare(row, col, handleReset, mouseDown, onChange) {
 
 export default function MNISTBoard(props) {
     const [mouseDown, setMouseDown] = useState(false);
-    const [predClass, setPredClass] = useState(null);
     const [resetHandlers, setResetHandlers] = useState([]);
 
     const size = 28;
@@ -55,32 +54,18 @@ export default function MNISTBoard(props) {
     }
 
     function renderRow(row) {
-        var mygrid = [];
-        var rowCols = [];
+        var myrow = [];
         for (var col=0; col < size; col++) {
-            rowCols.push([row, col]);
-            mygrid.push(
+            myrow.push(
                 <div>{GridSquare(row, col, bindResetHandler, mouseDown, onSqChange)}</div>
             );
         }   
         return (
             <div>
-                {mygrid}
+                {myrow}
             </div>
         );
     }
-
-    function renderClassifiedResult() {
-        if (predClass !== null) {
-            return (
-                <div className="result">
-                    Predicted class: {predClass}
-                </div>
-            );
-        } else {
-            return (<div>Predicted class: </div>);
-        }
-    };
 
     function RenderGrid() { 
         var grid = [];
@@ -99,15 +84,15 @@ export default function MNISTBoard(props) {
                 setMouseDown(false);
             }}
         >
-            <div className="boardText">
+            <div className="bigText">
                 Draw and classify a digit
             </div>
-            <div className="boardObject">
+            <div className="centerObject">
                 <div className="grid">
                     {RenderGrid()}
                 </div>
             </div>
-            <div className='boardText'>
+            <div className='centerObject'>
                 <button className="button" 
                     onClick={() => {reset()}}
                 >

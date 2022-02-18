@@ -3,21 +3,28 @@ main {
     vertical-align: center;
     line-height: 100vh;
 }
+.vspace {
+    min-height: 100px;
+}
 .MNISTBoard {
     /* margin-left: 0cm */
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.boardText {
+.bigText {
     display: flex;
     justify-content: center;
     font-size: 3vw;
 }
+.centerObject {
+    display: flex;
+    justify-content: center;
+}
 .boardObject {
     /* margin-left: 0cm */
     display: flex;
-    flex-direction: row;
+    /* flex-direction: row; */
     justify-content: center;
 }
 .square {
@@ -34,10 +41,19 @@ main {
       background-color:#FFFFFF;
 }
   
+.imgSquare {
+    float:left;
+    position: relative;
+    width:8vw;
+    height:8vw;
+    margin:0%;
+    overflow:hidden;
+    background-color:#FFFFFF;
+}
 .square.on {
       background-color:#1E1E1E;
 }
-  
+
 .grid {
       display: flex;
       flex-direction: row

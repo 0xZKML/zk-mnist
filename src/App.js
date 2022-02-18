@@ -12,6 +12,7 @@ import './App.css';
 // import Token from './artifacts/contracts/Token.sol/Token.json'
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import {DIGIT} from './mnistpics';
+import {digSize} from './MNISTDigits.js';
 
 
 const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
@@ -31,6 +32,7 @@ function App() {
     }
 
     async function doProof() {
+      console.log('image len =',image.length)
       console.log(image);
       const session = await InferenceSession.create(
         "http://localhost:3000/trimmed_convet.onnx",
@@ -38,24 +40,24 @@ function App() {
           executionProviders: ["wasm"],
         }
       );
-      // const data = Float32Array.from(image) // restore this line if we are reading from the hand drawn digit
+      const data = Float32Array.from(image) // restore this line if we are reading from the hand drawn digit
 
-      const data = DIGIT.weight[mydigit]; // keep this line if we are inserting an image of a digit via the sampleDigits.tsx file
+      // const data = DIGIT.weight[mydigit]; // keep this line if we are inserting an image of a digit via the sampleDigits.tsx file
 
-      console.log(data)
+      // console.log(data)
       const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
-      console.log(tensor)
+      // console.log(tensor)
       const feeds = { input: tensor};
       const results = await session.run(feeds);
       const embeddingResult = results.output.data;
-      console.log(embeddingResult)
+      // console.log(embeddingResult)
       var tempQuantizedEmbedding = new Array(50)
       for (var i = 0; i < 50; i++)
         tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
 
       if (typeof window.ethereum !== 'undefined') {
-          console.log('generate proof with')
-          console.log(tempQuantizedEmbedding)
+          // console.log('generate proof with')
+          // console.log(tempQuantizedEmbedding)
             const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
             setPublicSignal(publicSignals);
             setProof(proof);
@@ -100,33 +102,48 @@ function App() {
         
         setImage(newT.flat());
     }
+    function handleSelectDigit(r,c){
+      var mydigit = r*digSize+c;      
+      setImage(DIGIT.weight[mydigit]);
+      console.log(r,c)
+      doProof();
+  }
 
 
   return (
     <div className="App">
+      <div className="bigText">
+        Draw a digit or select an image to submit to ML classifier and ZK Prover
+      </div>
+      <div className="vspace" />
       <MNISTBoard onChange={(r,c) => handleChangeData(r,c)}  />
 
-      <header className="App-header">
-        <div className='boardText'>
+      {/* <header className="App-header"> */}
+        <div className='bigText'>
           <button className="button" onClick={doProof}>
             Capture image, compute embeddings, and generate zk proof
           </button>
         </div>
+        <div className="vspace" />
 
-      <MNISTDigits sel={mydigit} />
+      <MNISTDigits onClick={(r,c) => handleSelectDigit(r,c)} />
 
+      <div className="vspace" />
 
-        <p></p>
-        <div className='boardText'>
-          <button className='button'
-            onClick={verifyProof}>Verify Proof</button>
-        </div>
         <h1>Output</h1>
         <h2> Recognized Digit: {publicSignal}</h2>
         <h4> Proof: {JSON.stringify(proof)}</h4>
+
+        <div className="vspace" />
+
+        <div className='centerObject'>
+          <button className='button'
+            onClick={verifyProof}>Verify Proof</button>
+        </div>
+
         <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
         <p>Note: the verifier requires being connected to the chain</p>
-      </header>
+      {/* </header> */}
     </div>
   );
 }
