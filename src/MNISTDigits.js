@@ -49,6 +49,7 @@ export default function MNISTDigits(props) {
         function GridSquare(row, col, onClick) {
 
             function handleChange() {
+                console.log('in handleChange, clicked on',row,col)
                 onClick(row,col)
             }
         
@@ -56,6 +57,7 @@ export default function MNISTDigits(props) {
                 <div className={"imgSquare"}
                     onClick = {()=>handleChange()}
                 >
+                    {/* row = {row}, col = {col} */}
                     <img src={imgUrl[row*size+col]} alt="" />
                 </div>
             );
@@ -65,16 +67,16 @@ export default function MNISTDigits(props) {
         props.onClick(myrow, mycol)
     }
     
-    function renderRow(row) {
-        var myrow = [];
-        for (var col=0; col < size; col++) {
-            myrow.push(
+    function renderCol(col) {
+        var mycol = [];
+        for (var row=0; row < size; row++) {
+            mycol.push(
                 <div>{GridSquare(row, col, onClick)}</div>
             );
         }   
         return (
             <div>
-                {myrow}
+                {mycol}
             </div>
         );
     }
@@ -82,7 +84,7 @@ export default function MNISTDigits(props) {
     function RenderGrid() { 
         var grid = [];
         for (var i = 0; i < size; i++) {
-            grid.push(renderRow(i));
+            grid.push(renderCol(i));
         }
         return grid;
     }    

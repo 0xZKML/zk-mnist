@@ -8,3 +8,23 @@
   align-items: center;
   justify-content: center;
 }
+
+.digImg {
+  max-width: 200px;
+  vertical-align: center;
+  padding: 0%;
+}
+
+.recDig {
+  max-width: 170px;
+  padding: 0%;
+  font-size: 20px;
+  vertical-align: center;
+}
+
+.singleLine {
+  display: flex;
+  justify-content: center;
+  width: 100%;  
+  vertical-align: center;
+}

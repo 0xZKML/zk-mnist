@@ -9,13 +9,11 @@ function GridSquare(row, col, handleReset, mouseDown, onChange) {
 
     function reset(val) {
         setOn(val);
-        // grid[row][col] = val;
     }
 
     function handleChange() {
         if (mouseDown) {
             setOn(true);
-            // grid[row][col] = 1;
             onChange(row,col)
         }
     }
@@ -53,16 +51,16 @@ export default function MNISTBoard(props) {
         props.onChange(myrow, mycol)
     }
 
-    function renderRow(row) {
-        var myrow = [];
-        for (var col=0; col < size; col++) {
-            myrow.push(
+    function renderCol(col) {
+        var mycol = [];
+        for (var row=0; row < size; row++) {
+            mycol.push(
                 <div>{GridSquare(row, col, bindResetHandler, mouseDown, onSqChange)}</div>
             );
         }   
         return (
             <div>
-                {myrow}
+                {mycol}
             </div>
         );
     }
@@ -70,7 +68,7 @@ export default function MNISTBoard(props) {
     function RenderGrid() { 
         var grid = [];
         for (var i = 0; i < size; i++) {
-            grid.push(renderRow(i));
+            grid.push(renderCol(i));
         }
         return grid;
     }

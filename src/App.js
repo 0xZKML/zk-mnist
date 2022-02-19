@@ -90,24 +90,21 @@ function App() {
             newArray[i] = grid[i].slice();
         newArray[myrow][mycol]=1;
         setGrid(newArray);
+        image = newArray.flat();
+        selectedImgUrl = convImgUrl(image);
 
-        // transpose the array, because the drawing is transposed
-        const newT = [];
-        for(var i=0; i<grid.length; i++)
-          newT.push([]);
-        for(var i=0; i<grid.length; i++){
-          for(var j=0; j<grid.length; j++)
-            newT[j].push(newArray[i][j]);
-        }
-        image = newT.flat();
     }
 
     function handleSelectDigit(r,c){
       var mydigit = r*digSize+c;      
       image = DIGIT.weight[mydigit];
       console.log(r,c)
+      selectedImgUrl = convImgUrl(image);
+      doProof();
+    }
 
-// load the image array into the URL to be displayed
+    function convImgUrl(image) {
+      // load the image array into the URL to be displayed
       const p=4, myr=28;
       const canvas = document.createElement('canvas')
       const context = canvas.getContext('2d')
@@ -127,10 +124,8 @@ function App() {
           imageData.data[4*pos + 3] = 255;      
       }
       context.putImageData(imageData,0,0);
-      selectedImgUrl = canvas.toDataURL();
-      doProof();
+      return(canvas.toDataURL())
     }
-
 
   return (
     <div className="App">
@@ -152,20 +147,24 @@ function App() {
  
       {/* <div className="vspace" /> */}
 
-        <h1>Output</h1>
-        <h2>      <img src={selectedImgUrl} alt="" />
-Recognized Digit: {publicSignal}</h2>
-        <h4> Proof: {JSON.stringify(proof)}</h4>
-
-        <div className="vspace" />
-
-        <div className='centerObject'>
-          <button className='button'
-            onClick={verifyProof}>Verify Proof</button>
+      <h1>Output</h1>
+      <div className="singleLine">
+        <img className = "digImg" src={selectedImgUrl} alt="" />
+        <div className = "recDig">
+          Recognized Digit: {publicSignal}
         </div>
+      </div>
+      <h4> Proof: {JSON.stringify(proof)}</h4>
 
-        <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
-        <p>Note: the verifier requires being connected to the chain</p>
+      <div className="vspace" />
+
+      <div className='centerObject'>
+        <button className='button'
+          onClick={verifyProof}>Verify Proof</button>
+      </div>
+
+      <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
+      <p>Note: the verifier requires being connected to the chain</p>
       {/* </header> */}
       
     </div>
