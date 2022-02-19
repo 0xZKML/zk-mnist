@@ -1,4 +1,4 @@
-import React, { useState, useRef, createRef} from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import MNISTBoard from './MNISTBoard.js';
 import MNISTDigits from './MNISTDigits.js';
@@ -9,7 +9,6 @@ import snarkjs from 'snarkjs';
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
 import path from 'path';
 import './App.css';
-// import Token from './artifacts/contracts/Token.sol/Token.json'
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import {DIGIT} from './mnistpics';
 import {digSize} from './MNISTDigits.js';
@@ -25,39 +24,30 @@ function App() {
     const [isVerified, setIsVerified] = useState(false);
     const size=28;
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
-    const mydigit=17    
+    const mydigit=17   
 
     async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     }
 
     async function doProof() {
-      console.log('image len =',image.length)
-      console.log(image);
+      selectedImgUrl = convImgUrl(image);
       const session = await InferenceSession.create(
         "http://localhost:3000/trimmed_convet.onnx",
         {
           executionProviders: ["wasm"],
         }
       );
-      const data = Float32Array.from(image) // restore this line if we are reading from the hand drawn digit
-
-      // const data = DIGIT.weight[mydigit]; // keep this line if we are inserting an image of a digit via the sampleDigits.tsx file
-
-      // console.log(data)
+      const data = Float32Array.from(image) 
       const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
-      // console.log(tensor)
       const feeds = { input: tensor};
       const results = await session.run(feeds);
       const embeddingResult = results.output.data;
-      // console.log(embeddingResult)
       var tempQuantizedEmbedding = new Array(50)
       for (var i = 0; i < 50; i++)
         tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
 
       if (typeof window.ethereum !== 'undefined') {
-          // console.log('generate proof with')
-          // console.log(tempQuantizedEmbedding)
             const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
             setPublicSignal(publicSignals);
             setProof(proof);
@@ -68,7 +58,6 @@ function App() {
     }
 
     async function verifyProof() {
-    // console.log(typeof proof);
         if (typeof window.ethereum !== 'undefined') {
         await requestAccount();
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -84,7 +73,13 @@ function App() {
         }    
     }
 
-    function handleChangeData(myrow,mycol){
+    function resetImage() {
+      var newArray = Array(size).fill(null).map(_ => Array(size).fill(0));
+      setGrid(newArray);
+      image = newArray.flat();
+    }
+
+    function handleSetSquare(myrow,mycol){
         var newArray = [];
         for (var i = 0; i < grid.length; i++)
             newArray[i] = grid[i].slice();
@@ -99,7 +94,6 @@ function App() {
       var mydigit = r*digSize+c;      
       image = DIGIT.weight[mydigit];
       console.log(r,c)
-      selectedImgUrl = convImgUrl(image);
       doProof();
     }
 
@@ -133,9 +127,13 @@ function App() {
         Draw a digit or select an image to submit to ML classifier and ZK Prover
       </div>
       <div className="vspace" />
-      <MNISTBoard onChange={(r,c) => handleChangeData(r,c)}  />
+      <MNISTBoard grid={grid} onChange={(r,c) => handleSetSquare(r,c)}  />
 
-      {/* <header className="App-header"> */}
+        <div className='bigText'>
+          <button className="button" onClick={resetImage} >
+            Reset image
+          </button>
+        </div>
         <div className='bigText'>
           <button className="button" onClick={doProof}>
             Capture image, compute embeddings, and generate zk proof
@@ -145,8 +143,6 @@ function App() {
 
       <MNISTDigits onClick={(r,c) => handleSelectDigit(r,c)} />
  
-      {/* <div className="vspace" /> */}
-
       <h1>Output</h1>
       <div className="singleLine">
         <img className = "digImg" src={selectedImgUrl} alt="" />
@@ -154,7 +150,8 @@ function App() {
           Recognized Digit: {publicSignal}
         </div>
       </div>
-      <h4> Proof: {JSON.stringify(proof)}</h4>
+      <h2> Proof:</h2> 
+        <h4 className="proof">{JSON.stringify(proof)}</h4>
 
       <div className="vspace" />
 
@@ -165,7 +162,6 @@ function App() {
 
       <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
       <p>Note: the verifier requires being connected to the chain</p>
-      {/* </header> */}
       
     </div>
   );
