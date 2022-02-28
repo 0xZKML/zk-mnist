@@ -26,6 +26,21 @@ function App() {
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
     const mydigit=17   
 
+    function indexOfMax(arr) { // implement Argmax()
+      if (arr.length === 0) {
+          return -1;
+      } 
+      var max = arr[0];
+      var maxIndex = 0;
+      for (var i = 1; i < arr.length; i++) {
+          if (arr[i] > max) {
+              maxIndex = i;
+              max = arr[i];
+          }
+      }
+      return maxIndex;
+    }
+
     async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     }
@@ -33,24 +48,34 @@ function App() {
     async function doProof() {
       selectedImgUrl = convImgUrl(image);
       const session = await InferenceSession.create(
-        "http://localhost:3000/trimmed_convet.onnx",
+        "http://localhost:3000/mnist-7.onnx",
         {
           executionProviders: ["wasm"],
         }
       );
-      const data = Float32Array.from(image) 
-      const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
-      const feeds = { input: tensor};
+      const tensor = new Tensor('float32', Float32Array.from(image), [1, 1, 28, 28]);
+      const feeds: Record<string, Tensor> = {};
+      feeds[session.inputNames[0]] = tensor;
+      // const feeds = { Input3: tensor};
       const results = await session.run(feeds);
-      const embeddingResult = results.output.data;
-      var tempQuantizedEmbedding = new Array(50)
-      for (var i = 0; i < 50; i++)
-        tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
+      // console.log(results)
+      var output = results.Plus214_Output_0['data']
+      var winner = indexOfMax(output)
+
+      // const data = Float32Array.from(image) 
+      // const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
+      // const feeds = { input: tensor};
+      // const results = await session.run(feeds);
+      // const embeddingResult = results.output.data;
+      // var tempQuantizedEmbedding = new Array(50)
+      // for (var i = 0; i < 50; i++)
+      //   tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
 
       if (typeof window.ethereum !== 'undefined') {
-            const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
-            setPublicSignal(publicSignals);
-            setProof(proof);
+            // const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
+            // setPublicSignal(publicSignals);
+            setPublicSignal(winner.toString());
+            // setProof(proof);
       }
       else {
         console.log(window.ethereum)
