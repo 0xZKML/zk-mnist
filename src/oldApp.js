@@ -10,9 +10,7 @@ import { generateProof, buildContractCallArgs } from "./snarkUtils";
 import path from 'path';
 import './App.css';
 import { Tensor, InferenceSession } from "onnxruntime-web";
-const ONNXOUTPUT = 84; // length 84 vector output from onnx model
 import {DIGIT} from './mnistpics';
-import {SNARKLAYER} from './snarklayer';
 import {digSize} from './MNISTDigits.js';
 
 var image=[]; // the image array will eventually be a flattened version of grid (the 2-dim array)
@@ -28,49 +26,6 @@ function App() {
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
     const mydigit=17   
 
-    function indexOfMax(arr) { // implement Argmax()
-      if (arr.length === 0) {
-          return -1;
-      } 
-      var max = arr[0];
-      var maxIndex = 0;
-      for (var i = 1; i < arr.length; i++) {
-          if (arr[i] > max) {
-              maxIndex = i;
-              max = arr[i];
-          }
-      }
-      return maxIndex;
-    }
-
-    function multiplymatvec(mat, vec) { 
-      var aNumRows = mat.length, aNumCols = mat[0].length,
-          bNumRows = vec.length
-      if (aNumCols!=bNumRows){
-        alert('Error in multiplymatvec()!')
-      }
-      var m = new Array(aNumRows);
-      for (var r = 0; r < aNumRows; ++r) {
-          m[r] = 0;
-          for (var i = 0; i < aNumCols; ++i) {
-            m[r] += mat[r][i] * vec[i];
-          }
-      }
-      return m;
-    }
-
-    function addvec(v1, v2) { 
-      var aNumRows = v1.length, bNumRows = v2.length;
-      if (aNumRows!=bNumRows){
-        alert('Error in addvec()!')
-      }
-      var m = new Array(aNumRows);
-      for (var r = 0; r < aNumRows; r++) {
-        m[r] = v1[r] + v2[r];
-      }
-      return m;
-    }
-
     async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     }
@@ -78,38 +33,23 @@ function App() {
     async function doProof() {
       selectedImgUrl = convImgUrl(image);
       const session = await InferenceSession.create(
-        "http://localhost:3000/clientmodel.onnx",
+        "http://localhost:3000/trimmed_convet.onnx",
         {
           executionProviders: ["wasm"],
         }
       );
-      const tensor = new Tensor('float32', Float32Array.from(image), [1, 1, 28, 28]);
-      const feeds: Record<string, Tensor> = {};
-      feeds[session.inputNames[0]] = tensor;
-      // const feeds = { Input3: tensor};
+      const data = Float32Array.from(image) 
+      const tensor = new Tensor('float32', data, [1, 1, 28, 28]);
+      const feeds = { input: tensor};
       const results = await session.run(feeds);
-      // console.log(results)
-      var output = results['19']['data']
-      // console.log('onnx model: ', output)
-      // const snarkwt = SNARKLAYER.weight;
-      // const snarkbias = SNARKLAYER.bias;
-      // // console.log(snarkwt)
-      // // console.log(snarkbias)
-      // var result1 = multiplymatvec(snarkwt,output);
-      // // console.log('result1 ', result1)
-      // var result2 = addvec(result1,snarkbias);
-      // // console.log('ML output = ',result2)
-      // var winner = indexOfMax(result2)
-
-      var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
-      for (var i = 0; i < ONNXOUTPUT; i++)
-        tempQuantizedEmbedding[i] = parseInt(output[i].toFixed());
-      // console.log('tempquantizedembeddin ',tempQuantizedEmbedding)
+      const embeddingResult = results.output.data;
+      var tempQuantizedEmbedding = new Array(50)
+      for (var i = 0; i < 50; i++)
+        tempQuantizedEmbedding[i] = parseInt((embeddingResult[i]*1000).toFixed()) + 10000;
 
       if (typeof window.ethereum !== 'undefined') {
             const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
             setPublicSignal(publicSignals);
-            // setPublicSignal(winner.toString());
             setProof(proof);
       }
       else {
@@ -153,6 +93,7 @@ function App() {
     function handleSelectDigit(r,c){
       var mydigit = r*digSize+c;      
       image = DIGIT.weight[mydigit];
+      console.log(r,c)
       doProof();
     }
 

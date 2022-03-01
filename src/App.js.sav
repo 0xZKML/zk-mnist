@@ -183,9 +183,10 @@ function App() {
   return (
     <div className="App">
       <div className="bigText">
-        Draw a digit or select an image to submit to ML classifier and ZK Prover
+        Select an image to submit to ML classifier and ZK Prover
+        {/* Draw a digit or select an image to submit to ML classifier and ZK Prover */}
       </div>
-      <div className="vspace" />
+      {/* <div className="vspace" />
       <MNISTBoard grid={grid} onChange={(r,c) => handleSetSquare(r,c)}  />
 
         <div className='bigText'>
@@ -197,7 +198,7 @@ function App() {
           <button className="button" onClick={doProof}>
             Capture image, compute embeddings, and generate zk proof
           </button>
-        </div>
+        </div> */}
         <div className="vspace" />
 
       <MNISTDigits onClick={(r,c) => handleSelectDigit(r,c)} />
