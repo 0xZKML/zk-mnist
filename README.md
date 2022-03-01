@@ -1,6 +1,6 @@
 # About
 
-zk-MNIST scaffold app.
+zk-MNIST web frontend app and Jupyter notebook with ML model generation
 
 This project is part of [0xPARC](https://0xparc.org/blog/program-for-applied-research)'s winter 2021 applied zk learning group
 
@@ -8,8 +8,8 @@ This draws heavily from 0xJOF's [zk learning in public](https://github.com/JofAr
 
 ## Current Functionality:
 
-1) input a vector as a string format (need to replace this ASAP with image upload + preproc)
-2) generate proof in-browser using snarkjs 
+1) select an image of a hand-drawn digit
+2) classify digit and generate proof in-browser using snarkjs 
 3) verify proof on-chain using ethers + snarkjs
 
 ## How to run it locally:
@@ -20,7 +20,10 @@ Prerequisites: global install of circom 2.0
 2) `cd` into the directory
 3) `npm i` to install dependencies
 4) generate powers of tau `yarn zk:ptau`
-5) compile circuits `yarn zk:compile`
+5) compile circuits: (_yarn zk:compile_ doesn't work)
+5a) cd zk
+5b) zsh compile.sh
+5c) cd .. (back to main directory)
 6) compile the contracts `npx hardhat compile`
 7) start a local ether node: `npx hardhat node`
 8) switch to another terminal
@@ -35,6 +38,4 @@ Prerequisites: global install of circom 2.0
 
 All zk circuits are in the `zk` directory.
 1) generate basic powers of tau phase 1 with `yarn zk:ptau`
-2) compile the circuits, generate the solidty validator with `yarn zk:compile`
-3) test the circuits: `node src/generateJSProof.js`
-4) `yarn contracts:test` - tests the contracts
+2) compile the circuits, generate the solidty validator with `yarn zk:compile` (but see 5a/5b above)
