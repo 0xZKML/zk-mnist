@@ -5,6 +5,8 @@ Authors: @horacepan @sunfishstanford @henripal
 
 This project is part of [0xPARC](https://0xparc.org/blog/program-for-applied-research)'s winter 2021 applied zk learning group
 
+Blog/whitepaper: https://hackmd.io/Y7Y79_MtSoKdHNAEfZRXUg
+
 This draws heavily from 0xJOF's [zk learning in public](https://github.com/JofArnold/zkp-learning-in-public) repo and Wei Jie Koh's [zk nft mint repo](https://github.com/weijiekoh/zknftmint/blob/main/contracts/contracts/NftMint.sol)
 
 ## Current Functionality:
