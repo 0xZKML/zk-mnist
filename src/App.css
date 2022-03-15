@@ -25,11 +25,20 @@
 .singleLine {
   display: flex;
   justify-content: center;
-  width: 100%;  
+  width: 100%;
   vertical-align: center;
 }
 
-.proof { 
+.proof {
   width: 100%;
   display: flex;
+  align: left;
+}
+
+.button {
+  border-radius: 8px;
+}
+
+body {
+  font-family: sans-serif;
 }

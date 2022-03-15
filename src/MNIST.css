@@ -6,26 +6,51 @@ main {
 .vspace {
     min-height: 100px;
 }
+.MNISTPage {
+    display: flex;
+    flex-direction: column;
+}
 .MNISTBoard {
     /* margin-left: 0cm */
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: left;
+}
+.container {
+  display: flex;
+  flex-direction: column;
 }
 .bigText {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     font-size: 3vw;
 }
+.buttonPanel {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    padding: 20px;
+}
+.buttonPanelRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
 .centerObject {
     display: flex;
-    justify-content: center;
+    justify-content: left;
+    flex-direction: column;
 }
 .boardObject {
     /* margin-left: 0cm */
     display: flex;
     /* flex-direction: row; */
-    justify-content: center;
+    justify-content: left;
+}
+.proof {
+  display: flex;
+  flex-direction: column;
 }
 .square {
       float:left;
@@ -63,4 +88,5 @@ main {
     display: flex;
     text-align: center;
     font-size: 1.5vw;
+    flex: 0.15;
 }
