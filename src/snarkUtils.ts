@@ -11,8 +11,8 @@ export const generateProof = async (
       {
         image: image,
       },
-      "http://localhost:3000/circuit.wasm",
-      "http://localhost:3000/circuit_0001.zkey"
+      "./circuit.wasm",
+      "./circuit_0001.zkey"
     );
     return { proof, publicSignals };
   };

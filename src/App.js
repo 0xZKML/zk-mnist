@@ -16,7 +16,9 @@ import {SNARKLAYER} from './snarklayer';
 import {digSize} from './MNISTDigits.js';
 
 var image=[]; // the image array will eventually be a flattened version of grid (the 2-dim array)
-const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+// const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+const verifierAddress = "0x1C29c8A3C98f4a2f97a02a71D19a2D50Ac1a5a5D"
+
 var selectedImgUrl="";
 
 function App() {
@@ -78,7 +80,8 @@ function App() {
     async function doProof() {
       selectedImgUrl = convImgUrl(image);
       const session = await InferenceSession.create(
-        "http://localhost:3000/clientmodel.onnx",
+        "./clientmodel.onnx",
+
         {
           executionProviders: ["wasm"],
         }

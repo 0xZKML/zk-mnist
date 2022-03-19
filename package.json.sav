@@ -1,0 +1,65 @@
+{
+  "name": "zkmnistt",
+  "version": "1.0.0",
+  "description": "0xPARC project",
+  "author": "Henri Palacci",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "upgradedeps": "ncu -u --reject @types/node",
+    "contracts:test": "npx hardhat test tests/contracts.test.ts",
+    "zk:ptau": "cd zk && sh ptau.sh",
+    "zk:compile": "cd zk && zsh compile.sh"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "2.0.2",
+    "@nomiclabs/hardhat-waffle": "2.0.1",
+    "@openzeppelin/contracts": "3.4.2",
+    "@typechain/ethers-v5": "^6.0.5",
+    "@types/react": "^17.0.37",
+    "circomlib": "2.0.1",
+    "ethereum-waffle": "3.4.0",
+    "ethers": "5.4.7",
+    "hardhat": "2.6.6",
+    "hardhat-typechain": "^0.3.5",
+    "onnxruntime-web": "^1.10.0",
+    "react": "^17.0.2",
+    "react-canvas-draw": "^1.2.1",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "snarkjs": "0.4.10",
+    "ts-generator": "^0.1.1",
+    "typechain": "^4.0.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "devDependencies": {
+    "@types/chai": "4.2.22",
+    "@typescript-eslint/eslint-plugin": "5.0.0",
+    "@typescript-eslint/parser": "5.0.0",
+    "chai": "4.3.4",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-react": "7.26.1",
+    "hardhat-circom": "^1.2.0",
+    "prettier": "2.4.1",
+    "typescript": "4.4.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
