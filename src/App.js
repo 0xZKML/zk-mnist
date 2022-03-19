@@ -108,16 +108,20 @@ function App() {
       for (var i = 0; i < ONNXOUTPUT; i++)
         tempQuantizedEmbedding[i] = parseInt(output[i].toFixed());
       // console.log('tempquantizedembeddin ',tempQuantizedEmbedding)
-
-      if (typeof window.ethereum !== 'undefined') {
-            const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
-            setPublicSignal(publicSignals);
-            // setPublicSignal(winner.toString());
-            setProof(proof);
-      }
-      else {
-        console.log(window.ethereum)
-      }
+      const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
+      setPublicSignal(publicSignals);
+      // setPublicSignal(winner.toString());
+      setProof(proof);
+      
+      // if (typeof window.ethereum !== 'undefined') {
+      //       const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
+      //       setPublicSignal(publicSignals);
+      //       // setPublicSignal(winner.toString());
+      //       setProof(proof);
+      // }
+      // else {
+      //   console.log(window.ethereum)
+      // }
     }
 
     async function verifyProof() {
