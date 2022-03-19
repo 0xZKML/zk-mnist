@@ -1,23 +1,19 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import MNISTBoard from './MNISTBoard.js';
 import MNISTDigits from './MNISTDigits.js';
-
 import { ethers } from 'ethers'
 import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
-import snarkjs from 'snarkjs';
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
-import path from 'path';
 import './App.css';
 import { Tensor, InferenceSession } from "onnxruntime-web";
 const ONNXOUTPUT = 84; // length 84 vector output from onnx model
 import {DIGIT} from './mnistpics';
-import {SNARKLAYER} from './snarklayer';
 import {digSize} from './MNISTDigits.js';
 
 var image=[]; // the image array will eventually be a flattened version of grid (the 2-dim array)
 // const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-// const verifierAddress = "0x1C29c8A3C98f4a2f97a02a71D19a2D50Ac1a5a5D"
+
 const verifierAddress = "0xAA2487705E138e4dd37dF2e4851bFC8984872721"
 var selectedImgUrl="";
 
@@ -93,16 +89,6 @@ function App() {
       const results = await session.run(feeds);
       // console.log(results)
       var output = results['19']['data']
-      // console.log('onnx model: ', output)
-      // const snarkwt = SNARKLAYER.weight;
-      // const snarkbias = SNARKLAYER.bias;
-      // // console.log(snarkwt)
-      // // console.log(snarkbias)
-      // var result1 = multiplymatvec(snarkwt,output);
-      // // console.log('result1 ', result1)
-      // var result2 = addvec(result1,snarkbias);
-      // // console.log('ML output = ',result2)
-      // var winner = indexOfMax(result2)
 
       var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
       for (var i = 0; i < ONNXOUTPUT; i++)
@@ -112,16 +98,6 @@ function App() {
       setPublicSignal(publicSignals);
       // setPublicSignal(winner.toString());
       setProof(proof);
-      
-      // if (typeof window.ethereum !== 'undefined') {
-      //       const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
-      //       setPublicSignal(publicSignals);
-      //       // setPublicSignal(winner.toString());
-      //       setProof(proof);
-      // }
-      // else {
-      //   console.log(window.ethereum)
-      // }
     }
 
     async function verifyProof() {
@@ -189,10 +165,9 @@ function App() {
 
   return (
     <div className="App">
-      <div className="bigText">
-        Draw a digit or select an image to submit to ML classifier and ZK Prover
-      </div>
-      <div className="vspace" />
+      <h2>Draw a digit or select an image to submit to ML classifier and ZK prover</h2>
+        <p>Note: Initial run of ZK prover will require a few seconds to load; mobile browsers not supported</p>
+      {/* <div className="vspace" /> */}
       <MNISTBoard grid={grid} onChange={(r,c) => handleSetSquare(r,c)}  />
 
         <div className='bigText'>
@@ -227,7 +202,7 @@ function App() {
       </div>
 
       <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
-      <p>Note: the verifier requires being connected to the chain</p>
+      <p>Note: the ZK verifier requires being connected to the chain with a wallet on Ropsten testnet</p>
       
     </div>
   );

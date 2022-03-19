@@ -2,13 +2,6 @@
     text-align: center;
   }
 
-.canvas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
 .digImg {
   max-width: 200px;
   vertical-align: center;
