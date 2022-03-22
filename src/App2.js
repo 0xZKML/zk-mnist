@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react'
 import { Outlet, Link } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MNISTApp } from "./MNISTBoard.js";
@@ -20,7 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />}/>
         <Route path="/mnist" element={<MNISTApp />}/>
-        <Route path="/selector" element={<Selector />}/>
+        <Route path="/selector" element={<MNISTDigits />}/>
         <Route path="/model" element={<ModelDesc />}/>
       </Routes>
     </BrowserRouter>

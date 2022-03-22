@@ -9,51 +9,58 @@ main {
 .MNISTPage {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 .MNISTBoard {
     /* margin-left: 0cm */
     display: flex;
-    flex-direction: row;
-    justify-content: left;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 .bigText {
     display: flex;
-    justify-content: left;
+    flex-direction: row;
+    justify-content: center;
     font-size: 3vw;
 }
 .buttonPanel {
     display: flex;
     flex-direction: row;
-    justify-content: left;
+    justify-content: center;
     padding: 20px;
 }
-.buttonPanelRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
+.selectedPanel {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
 }
 
 .centerObject {
     display: flex;
-    justify-content: left;
+    justify-content: center;
     flex-direction: column;
 }
 .boardObject {
     /* margin-left: 0cm */
     display: flex;
     /* flex-direction: row; */
-    justify-content: left;
+    justify-content: center;
 }
 .proof {
   display: flex;
   flex-direction: column;
+  text-align: center;
 }
 .square {
-      float:left;
+      float:center;
       position: relative;
       width:1vw;
       height:1vw;
@@ -65,9 +72,9 @@ main {
 .square.off {
       background-color:#FFFFFF;
 }
-  
+
 .imgSquare {
-    float:left;
+    float:center;
     position: relative;
     width:8vw;
     height:8vw;

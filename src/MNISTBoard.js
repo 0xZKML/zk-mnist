@@ -18,7 +18,6 @@ import {digSize} from './MNISTDigits.js';
 
 const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const ONNXOUTPUT = 84; // length 84 vector output from onnx model
-var image = []; // the image array will eventually be a flattened version of grid (the 2-dim array)
 
 export function MNISTBoard(props) {
   const [mouseDown, setMouseDown] = useState(false);
@@ -96,29 +95,44 @@ export function MNISTApp() {
   const [proofDone, setProofDone] = useState(false)
   const [publicSignal, setPublicSignal] = useState()
   const [isVerified, setIsVerified] = useState(false);
-  const size=28;
+  const size = 28;
+  const MNISTSIZE = 28; // TODO: merge constants with MNISTDIGIT constants
+  const batch = 16;
   const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
-  const mydigit=17;
+  const imgTensor = Array(batch * size * size).fill(0);
 
   async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
   }
 
   async function doProof() {
+    var start = performance.now();
     const session = await InferenceSession.create(
-      "http://localhost:3000/clientmodel.onnx",
+      //"http://localhost:3000/clientmodel.onnx",
+      "http://localhost:3000/clientmodel_bs16.onnx",
       {
         executionProviders: ["wasm"],
       }
     );
-
-    const tensor = new Tensor('float32', Float32Array.from(image), [1, 1, 28, 28]);
+    // get image from grid
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        var idx = i * size + j;
+        imgTensor[i * size + j] = grid[i][j];
+      }
+    }
+    var imgStr = imgTensor.slice(0, 784).join(", ");
+    console.log("img_str = [" + imgStr + "]");
+    const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batch, 1, 28, 28]);
+    console.log('tensor is:');
+    console.log(tensor);
     const feeds: Record<string, Tensor> = {};
     feeds[session.inputNames[0]] = tensor;
-    // const feeds = { Input3: tensor};
     const results = await session.run(feeds);
-    // console.log(results)
     var output = results['19']['data']
+    console.log("output:");
+    console.log(output.slice(0, 5));
+
     // console.log('onnx model: ', output)
     // const snarkwt = SNARKLAYER.weight;
     // const snarkbias = SNARKLAYER.bias;
@@ -134,9 +148,15 @@ export function MNISTApp() {
     for (var i = 0; i < ONNXOUTPUT; i++)
       tempQuantizedEmbedding[i] = parseInt(output[i].toFixed());
 
+    var endTime = performance.now();
+    console.log(`Call to doSomething took ${endTime - start} milliseconds`)
+
     if (typeof window.ethereum !== 'undefined') {
+      var pstart = performance.now();
       const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
-      setPublicSignal(publicSignals);
+      var pend = performance.now();
+      console.log(`Proof time: ${pend - pstart}ms`);
+      setPublicSignal(publicSignals.slice(0, 1)); // circuit spits out batch result
       setProof(proof);
       setProofDone(true);
     } else {
@@ -164,7 +184,9 @@ export function MNISTApp() {
     var newArray = Array(size).fill(null).map(_ => Array(size).fill(0));
     setGrid(newArray);
     setProofDone(false);
-    image = newArray.flat();
+    for (let i = 0; i < imgTensor.length; i++) {
+      imgTensor[i] = 0;
+    }
   }
 
   function handleSetSquare(myrow,mycol){
@@ -173,7 +195,6 @@ export function MNISTApp() {
       newArray[i] = grid[i].slice();
     newArray[myrow][mycol]=1;
     setGrid(newArray);
-    image = newArray.flat();
   }
 
   function ResetButton () {

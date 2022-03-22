@@ -5,7 +5,7 @@ import * as snarkjs from "snarkjs";
 import builder from "./circuit_js/witness_calculator";
 
 export const generateProof = async (
-    image: number[]
+    image: number[][]
   ): Promise<{ proof: any; publicSignals: any }> => {
     const { proof, publicSignals } = await genProof(
       {
