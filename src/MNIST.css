@@ -1,7 +1,6 @@
 main {
     text-align: center;
-    vertical-align: center;
-    line-height: 100vh;
+    vertical-align: center; line-height: 100vh;
 }
 .vspace {
     min-height: 100px;
@@ -54,11 +53,15 @@ main {
     /* flex-direction: row; */
     justify-content: center;
 }
+
 .proof {
   display: flex;
   flex-direction: column;
-  text-align: center;
+  /*justify-content: center; */
+  align-items: center;
+  text-align: left;
 }
+
 .square {
       float:center;
       position: relative;
@@ -69,6 +72,7 @@ main {
       overflow:hidden;
       border:1px solid black;
 }
+
 .square.off {
       background-color:#FFFFFF;
 }
@@ -82,6 +86,16 @@ main {
     overflow:hidden;
     background-color:#FFFFFF;
 }
+.imgSquareDigit {
+    float:center;
+    position: relative;
+    width:12vw;
+    height:12vw;
+    margin:0%;
+    overflow:hidden;
+    background-color:#FFFFFF;
+}
+
 .square.on {
       background-color:#1E1E1E;
 }
@@ -93,7 +107,9 @@ main {
 
 .button {
     display: flex;
-    text-align: center;
-    font-size: 1.5vw;
-    flex: 0.15;
+    justify-content: center;
+    align-items: center;
+    font-size: 2vw;
+    flex: 1;
+    margin:10px;
 }

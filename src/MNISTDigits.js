@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {DIGIT} from './mnistpics';
 import './MNIST.css';
+import './App.css';
 import MNISTBoard from './MNISTBoard.js';
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
 import { CopyBlock, dracula } from "react-code-blocks";
 
 export const digSize = 4;
-const random_subset = randints(0, DIGIT['weight'].length, 16);
+const randomDigits = randints(0, DIGIT['weight'].length, 16);
 
-    // console.log(results)
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -46,13 +46,15 @@ export function MNISTDigits(props) {
         const p = 7; // it's a p*r x p*r 2d grid of pixels
         const r = 28; // with pxp blocks of identical pixels
         // so it's effectively a rxr grid of large pxp block pixels
+        // TODO: images are overlapping and getting hidden by subsequent images in grid
         const canvas = document.createElement('canvas')
+        canvas.width = 196;
+        canvas.height = 196;
         const context = canvas.getContext('2d')
         var imageData = context.createImageData(p*r, p*r);
 
-        // TODO: can randomly sample digits instead
         for(let n=0; n<size*size; n++){
-            let idx = random_subset[n];
+            let idx = randomDigits[n];
             for (var pos=0; pos<p*p*r*r; pos++) {
                 // i1,j1 = row and col for the physical grid
                 let i1 = Math.floor(pos/(p*r));
@@ -65,7 +67,7 @@ export function MNISTDigits(props) {
                 imageData.data[4*pos + 2] = digit[idx][ind] * 255;
                 imageData.data[4*pos + 3] = 255;
             }
-            context.putImageData(imageData,0,0);
+            context.putImageData(imageData, 0, 0);
             const dataURI = canvas.toDataURL();
             dataURIList.push(dataURI);
         }
@@ -83,7 +85,7 @@ export function MNISTDigits(props) {
       var imgTensor = Array(batchSize * MNISTSIZE).fill(0);
 
       for (let i = 0; i < nselected; i++) {
-        var idx = random_subset[selected[i]];
+        var idx = randomDigits[selected[i]];
         for (let j = 0; j < MNISTSIZE; j++) {
           imgTensor[i * MNISTSIZE + j] = digit[idx][j];
         }
@@ -144,7 +146,7 @@ export function MNISTDigits(props) {
 
     function GridSquare(row, col, onClick) {
         return (
-            <div className={"imgSquare"}
+            <div className={"imgSquareDigit"}
             onClick = {()=>onClick(row, col)}
             >
             {/* row = {row}, col = {col} */}
@@ -228,14 +230,6 @@ export function MNISTDigits(props) {
       );
     }
 
-    function ProofButton () {
-        return (
-          <button className="button" onClick={doProof}>
-            Classify & Prove
-          </button>
-        );
-    }
-
     function ProofBlock () {
         return (
           <div className="proof">
@@ -253,7 +247,7 @@ export function MNISTDigits(props) {
     function DisplaySelection() {
       return (
           <div className="selectedPanel">
-            <h2>Selected {selected.length} images:</h2>
+            <h2>Selected {selected.length} images</h2>
             <div>
               {selected.length > 0 ? "[" + selected.join(", ") + "]" : ""}
             </div>
