@@ -13,8 +13,6 @@ import path from 'path';
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import {DIGIT} from './mnistpics';
 import {SNARKLAYER} from './snarklayer';
-import {digSize} from './MNISTDigits.js';
-
 
 const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const ONNXOUTPUT = 84; // length 84 vector output from onnx model

@@ -33,6 +33,7 @@ export function MNISTDigits(props) {
     const [proof, setProof] = useState("");
     const [proofDone, setProofDone] = useState(false)
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0)));
+    const [gridChecked, setGridChecked] = useState(Array(size).fill(null).map(_ => Array(size).fill(false)));
     const digit = DIGIT.weight;
     const dataURIList = [];
     const ONNXOUTPUT = 84;
@@ -145,12 +146,13 @@ export function MNISTDigits(props) {
     }
 
     function GridSquare(row, col, onClick) {
+        var _id = "imgSquareDigit(" + row + ", " + col + ")";
         return (
-            <div className={"imgSquareDigit"}
-            onClick = {()=>onClick(row, col)}
-            >
-            {/* row = {row}, col = {col} */}
-            <img src={imgUrl[row*size+col]} alt="" />
+            <div className="imgSquareDigit">
+              <input type="checkbox" id={_id} checked={gridChecked[row][col]} />
+              <label htmlFor={_id} >
+                <img src={imgUrl[row*size+col]} alt="" onClick = {()=>onClick(row, col)}/>
+              </label>
             </div>
         );
     }
@@ -161,10 +163,9 @@ export function MNISTDigits(props) {
       //doProof();
     }
 
-    function onClick(myrow, mycol) {
-      console.log("Clicking " + myrow + ", " + mycol);
-      handleSelectDigit(myrow, mycol);
-      var idx = myrow * size + mycol;
+    function onClick(row, col) {
+      console.log("Clicking " + row + ", " + col);
+      var idx = row * size + col;
       var newSelected = selected.slice();
       var idxOf = newSelected.indexOf(idx);
 
@@ -173,8 +174,13 @@ export function MNISTDigits(props) {
       } else {
         newSelected.splice(idxOf, 1);
       }
-      newSelected.sort();
+      newSelected.sort(function (a, b) {
+        return a-b;
+      });
       setSelected(newSelected);
+
+      var newGridChecked = gridChecked.slice();
+      newGridChecked[row][col] = !newGridChecked[row][col];
     }
 
     function renderCol(col) {
@@ -200,6 +206,8 @@ export function MNISTDigits(props) {
     }
 
     function reset() {
+      var newGridChecked = Array(size).fill(null).map(_ => Array(size).fill(false));
+      setGridChecked(newGridChecked);
       setPublicSignal([]);
       setProof("");
       setProofDone(false);
@@ -224,7 +232,12 @@ export function MNISTDigits(props) {
     }
     function SelectAllButton() {
       return (
-        <button className="button" onClick={() => {setSelected([...Array(size*size).keys()]);}}>
+        <button className="button"
+          onClick={() => {
+            setSelected([...Array(size*size).keys()]);
+            setGridChecked(Array(size).fill(null).map(_ => Array(size).fill(true)));
+          }}
+        >
           Select all
         </button>
       );
@@ -233,8 +246,8 @@ export function MNISTDigits(props) {
     function ProofBlock () {
         return (
           <div className="proof">
-            <h2>Results</h2>
-              Model predicted: {"[" + publicSignal.join(", ") + "]"}
+            <h2>Predictions</h2>
+              {"[" + publicSignal.join(", ") + "]"}
             <h2>Proof of computation</h2>
             <CopyBlock
               text={JSON.stringify(proof, null, 2)}
@@ -244,6 +257,7 @@ export function MNISTDigits(props) {
           </div>
         );
     }
+
     function DisplaySelection() {
       return (
           <div className="selectedPanel">
@@ -254,6 +268,7 @@ export function MNISTDigits(props) {
           </div>
       );
     }
+
     return (
         <div>
             <div className="MNISTBoard">
