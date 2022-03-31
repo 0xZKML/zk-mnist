@@ -36,7 +36,9 @@ node ./build/circuit_js/generate_witness.js ./build/circuit_js/circuit.wasm inpu
 
 # Setup (use plonk so we can skip ptau phase 2
 echo "compute zkey"
-yarn snarkjs groth16 setup ./zk/build/circuit.r1cs ./zk/ptau/pot12_final.ptau ./zk/build/circuit_0000.zkey
+#yarn snarkjs groth16 setup ./zk/build/circuit.r1cs ./zk/ptau/pot13_final.ptau ./zk/build/circuit_0000.zkey
+# need pot13
+yarn snarkjs groth16 setup ./zk/build/circuit.r1cs ./zk/ptau/pot13_final.ptau ./zk/build/circuit_0000.zkey
 
 # Ceremony just like before but for zkey this time
 yarn snarkjs zkey contribute ./zk/build/circuit_0000.zkey ./zk/build/circuit_0001.zkey --name="First contribution" -v -e="$(head -n 4096 /dev/urandom | openssl sha1)"
