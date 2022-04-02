@@ -1,5 +1,7 @@
 #!/bin/zsh
 set -e
+echo $path
+which circom
 
 # Check if input.json exists to define the inputs for your witness. If not, exist
 
