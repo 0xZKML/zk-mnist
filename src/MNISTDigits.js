@@ -105,47 +105,15 @@ export function MNISTDigits(props) {
       const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batchSize, 1, 28, 28]);
 
       const {QuantizedEmbedding} = await doClassify(nselected,tensor,batchSize)
-
-      // const session = await InferenceSession.create(
-      //   //"http://localhost:3000/clientmodel.onnx",
-      //   "http://localhost:3000/clientmodel_bs16.onnx",
-      //   {
-      //     executionProviders: ["wasm"],
-      //   }
-      // );
-
-      // // get all selected images
-      // const feeds: Record<string, Tensor> = {};
-      // feeds[session.inputNames[0]] = tensor;
-      // const results = await session.run(feeds);
-      // var output = results['19']['data'];
-      // console.log("output:");
-      // console.log(output);
-      // // var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
-      // // var tempQuantizedEmbedding = Array(batchSize).fill().map(() => Array(ONNXOUTPUT));
-      // var QuantizedEmbedding = Array(batchSize).fill().map(() => Array(ONNXOUTPUT).fill(0));
-
-      // // tempQuantized should be a 2 d array
-      // for (var i = 0; i < nselected; i++) {
-      //     for (var j = 0; j < ONNXOUTPUT; j++) {
-      //       QuantizedEmbedding[i][j] = parseInt(output[i * ONNXOUTPUT + j].toFixed());
-      //     }
-      // }
-
-      if (typeof window.ethereum !== 'undefined') {
-            const { proof, publicSignals } = await generateProof(QuantizedEmbedding)
-            // output of the circuit has size {batchSize} so we must slice
-            console.log("Proofdone:");
-            console.log(proof);
-            console.log("classification:");
-            console.log(publicSignals);
-            setPublicSignal(publicSignals.slice(0, nselected));
-            setProof(proof);
-            setProofDone(true);
-      }
-      else {
-        console.log(window.ethereum)
-      }
+      const { proof, publicSignals } = await generateProof(QuantizedEmbedding)
+      // output of the circuit has size {batchSize} so we must slice
+      console.log("Proofdone:");
+      console.log(proof);
+      console.log("classification:");
+      console.log(publicSignals);
+      setPublicSignal(publicSignals.slice(0, nselected));
+      setProof(proof);
+      setProofDone(true);
     }
 
     function GridSquare(row, col, onClick) {
@@ -180,6 +148,7 @@ export function MNISTDigits(props) {
       newSelected.sort(function (a, b) {
         return a-b;
       });
+      console.log('newSelected = ',newSelected)
       setSelected(newSelected);
 
       var newGridChecked = gridChecked.slice();
