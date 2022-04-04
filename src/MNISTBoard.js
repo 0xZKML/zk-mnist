@@ -106,8 +106,8 @@ export function MNISTApp() {
   async function doProof() {
     var start = performance.now();
     const session = await InferenceSession.create(
-      //"http://localhost:3000/clientmodel.onnx",
-      "http://localhost:3000/clientmodel_bs16.onnx",
+      "http://localhost:3000/clientmodel.onnx",
+      // "http://localhost:3000/clientmodel_bs16.onnx",
       {
         executionProviders: ["wasm"],
       }
