@@ -5,12 +5,10 @@ Authors: @horacepan @sunfishstanford @henripal
 
 You can play with the webapp demo at: https://zkmldemo.netlify.app/
 (Note: mobile browsers not supported; wallet connected to Ropsten testnet required to demonstrate ZK verifier.)
+Tutorial blog post: https://hackmd.io/Y7Y79_MtSoKdHNAEfZRXUg
 
-This project is part of [0xPARC](https://0xparc.org/blog/program-for-applied-research)'s winter 2021 applied zk learning group
 
-Current writeup draft: https://hackmd.io/Y7Y79_MtSoKdHNAEfZRXUg
-
-This draws heavily from 0xJOF's [zk learning in public](https://github.com/JofArnold/zkp-learning-in-public) repo and Wei Jie Koh's [zk nft mint repo](https://github.com/weijiekoh/zknftmint/blob/main/contracts/contracts/NftMint.sol)
+This project is part of [0xPARC](https://0xparc.org/blog/program-for-applied-research)'s winter 2021 applied zk learning group, and draws heavily from 0xJOF's [zk learning in public](https://github.com/JofArnold/zkp-learning-in-public) repo and Wei Jie Koh's [zk nft mint repo](https://github.com/weijiekoh/zknftmint/blob/main/contracts/contracts/NftMint.sol)
 
 ## Current Functionality:
 

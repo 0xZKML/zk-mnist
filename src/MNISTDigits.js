@@ -4,8 +4,12 @@ import './MNIST.css';
 import './App.css';
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
+import { ethers } from 'ethers'
+import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
+import snarkjs from 'snarkjs';
 import { CopyBlock, dracula } from "react-code-blocks";
 import { doClassify } from "./Classify";
+const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 export const digSize = 4;
 const randomDigits = randints(0, DIGIT['weight'].length, 16);
@@ -32,6 +36,8 @@ export function MNISTDigits(props) {
     const [publicSignal, setPublicSignal] = useState([]);
     const [proof, setProof] = useState("");
     const [proofDone, setProofDone] = useState(false)
+    const [isVerified, setIsVerified] = useState(false);
+
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0)));
     const [gridChecked, setGridChecked] = useState(Array(size).fill(null).map(_ => Array(size).fill(false)));
     const digit = DIGIT.weight;
@@ -116,6 +122,29 @@ export function MNISTDigits(props) {
       setProofDone(true);
     }
 
+    async function requestAccount() {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }
+
+    async function doVerify() {
+        if (typeof window.ethereum !== 'undefined') {
+          await requestAccount();
+          const provider = new ethers.providers.Web3Provider(window.ethereum)
+          const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
+          const callArgs = await buildContractCallArgs(proof, publicSignal)
+          try {
+              const result = await verifier.verifyProof(...callArgs)
+              console.log('verifier result = ',result)
+              setIsVerified(result)
+          } catch(err) {
+              console.log(err)
+          }
+        }    
+        else {
+          alert('Please connect your wallet to the blockchain containing the verifier smart contract')
+        }
+    }
+
     function GridSquare(row, col, onClick) {
         var _id = "imgSquareDigit(" + row + ", " + col + ")";
         return (
@@ -194,6 +223,14 @@ export function MNISTDigits(props) {
         );
     }
 
+    function VerifyButton () {
+        return (
+          <button className="button" onClick={doVerify}>
+            Verify (requires wallet connection to blockchain smart contract)
+          </button>
+        );
+    }
+
     function ResetButton() {
 
         return (
@@ -256,6 +293,7 @@ export function MNISTDigits(props) {
                 <div className="buttonPanel">
                   <SelectAllButton />
                   <ProofButton />
+                  <VerifyButton />
                   <ResetButton />
                 </div>
                 <DisplaySelection />
@@ -265,3 +303,7 @@ export function MNISTDigits(props) {
         </div>
     );
 }
+
+
+
+{/* <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2> */}
