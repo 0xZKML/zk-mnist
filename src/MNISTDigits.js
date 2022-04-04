@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {DIGIT} from './mnistpics';
 import './MNIST.css';
 import './App.css';
-import MNISTBoard from './MNISTBoard.js';
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
 import { CopyBlock, dracula } from "react-code-blocks";
