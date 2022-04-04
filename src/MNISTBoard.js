@@ -13,11 +13,13 @@ import path from 'path';
 import { Tensor, InferenceSession } from "onnxruntime-web";
 import {DIGIT} from './mnistpics';
 import {SNARKLAYER} from './snarklayer';
+import { doClassify } from "./Classify";
+
 
 const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const ONNXOUTPUT = 84; // length 84 vector output from onnx model
 
-export function MNISTBoard(props) {
+function MNISTBoard(props) {
   const [mouseDown, setMouseDown] = useState(false);
   const size = 28;
 
@@ -94,10 +96,9 @@ export function MNISTApp() {
   const [publicSignal, setPublicSignal] = useState()
   const [isVerified, setIsVerified] = useState(false);
   const size = 28;
-  const MNISTSIZE = 28; // TODO: merge constants with MNISTDIGIT constants
-  const batch = 16;
+  const MNISTSIZE = 784; // TODO: merge constants with MNISTDIGIT constants
+  const batchSize = 16;
   const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
-  const imgTensor = Array(batch * size * size).fill(0);
 
   async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -106,60 +107,49 @@ export function MNISTApp() {
   async function doProof() {
     var start = performance.now();
     const session = await InferenceSession.create(
-      "http://localhost:3000/clientmodel.onnx",
-      // "http://localhost:3000/clientmodel_bs16.onnx",
+      // "http://localhost:3000/clientmodel.onnx",
+      "http://localhost:3000/clientmodel_bs16.onnx",
       {
         executionProviders: ["wasm"],
       }
     );
     // get image from grid
+    var imgTensor = Array(batchSize * MNISTSIZE).fill(0);
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
-        var idx = i * size + j;
         imgTensor[i * size + j] = grid[i][j];
       }
     }
-    var imgStr = imgTensor.slice(0, 784).join(", ");
-    console.log("img_str = [" + imgStr + "]");
-    const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batch, 1, 28, 28]);
-    console.log('tensor is:');
-    console.log(tensor);
-    const feeds: Record<string, Tensor> = {};
-    feeds[session.inputNames[0]] = tensor;
-    const results = await session.run(feeds);
-    var output = results['19']['data']
-    console.log("output:");
-    console.log(output.slice(0, 5));
 
-    // console.log('onnx model: ', output)
-    // const snarkwt = SNARKLAYER.weight;
-    // const snarkbias = SNARKLAYER.bias;
-    // // console.log(snarkwt)
-    // // console.log(snarkbias)
-    // var result1 = multiplymatvec(snarkwt,output);
-    // // console.log('result1 ', result1)
-    // var result2 = addvec(result1,snarkbias);
-    // // console.log('ML output = ',result2)
-    // var winner = indexOfMax(result2)
+    var nselected = 1;
+    const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batchSize, 1, 28, 28]);
+    const {quantizedEmbedding} = await doClassify(nselected,tensor,batchSize)
 
-    var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
-    for (var i = 0; i < ONNXOUTPUT; i++)
-      tempQuantizedEmbedding[i] = parseInt(output[i].toFixed());
+    // var imgStr = imgTensor.slice(0, 784).join(", ");
+    // console.log("img_str = [" + imgStr + "]");
+    // const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batch, 1, 28, 28]);
+    // console.log('tensor is:');
+    // console.log(tensor);
+    // const feeds: Record<string, Tensor> = {};
+    // feeds[session.inputNames[0]] = tensor;
+    // const results = await session.run(feeds);
+    // var output = results['19']['data']
+    // console.log("output:");
+    // console.log(output.slice(0, 5));
+    // var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
+    // for (var i = 0; i < ONNXOUTPUT; i++)
+    //   tempQuantizedEmbedding[i] = parseInt(output[i].toFixed());
 
     var endTime = performance.now();
     console.log(`Call to doSomething took ${endTime - start} milliseconds`)
 
-    if (typeof window.ethereum !== 'undefined') {
-      var pstart = performance.now();
-      const { proof, publicSignals } = await generateProof(tempQuantizedEmbedding)
-      var pend = performance.now();
-      console.log(`Proof time: ${pend - pstart}ms`);
-      setPublicSignal(publicSignals.slice(0, 1)); // circuit spits out batch result
-      setProof(proof);
-      setProofDone(true);
-    } else {
-      console.log("No metamask wallet found");
-    }
+    var pstart = performance.now();
+    const { proof, publicSignals } = await generateProof(quantizedEmbedding)
+    var pend = performance.now();
+    console.log(`Proof time: ${pend - pstart}ms`);
+    setPublicSignal(publicSignals.slice(0, 1)); // circuit spits out batch result
+    setProof(proof);
+    setProofDone(true);
   }
 
   async function verifyProof() {

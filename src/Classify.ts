@@ -5,7 +5,7 @@ export const doClassify = async (
   nselected:any,
   tensor:Tensor,
   batchSize:any
-): Promise <{QuantizedEmbedding: any}> => {
+): Promise <{quantizedEmbedding: any}> => {
 
   const session = await InferenceSession.create(
     //"http://localhost:3000/clientmodel.onnx",
@@ -23,13 +23,13 @@ export const doClassify = async (
   console.log(output);
   // var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
   // var tempQuantizedEmbedding = Array(batchSize).fill().map(() => Array(ONNXOUTPUT));
-  var QuantizedEmbedding = Array(batchSize).fill().map(() => Array(ONNXOUTPUT).fill(0));
+  var quantizedEmbedding = Array(batchSize).fill().map(() => Array(ONNXOUTPUT).fill(0));
   for (var i = 0; i < nselected; i++) {
       for (var j = 0; j < ONNXOUTPUT; j++) {
-        QuantizedEmbedding[i][j] = parseInt(output[i * ONNXOUTPUT + j].toFixed());
+        quantizedEmbedding[i][j] = parseInt(output[i * ONNXOUTPUT + j].toFixed());
       }
   }
-  return { QuantizedEmbedding};
+  return { quantizedEmbedding};
 };
 
 

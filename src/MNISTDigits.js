@@ -104,8 +104,8 @@ export function MNISTDigits(props) {
       var imgTensor = getSelectedImages(selected);
       const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batchSize, 1, 28, 28]);
 
-      const {QuantizedEmbedding} = await doClassify(nselected,tensor,batchSize)
-      const { proof, publicSignals } = await generateProof(QuantizedEmbedding)
+      const {quantizedEmbedding} = await doClassify(nselected,tensor,batchSize)
+      const { proof, publicSignals } = await generateProof(quantizedEmbedding)
       // output of the circuit has size {batchSize} so we must slice
       console.log("Proofdone:");
       console.log(proof);
