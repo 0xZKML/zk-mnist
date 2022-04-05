@@ -117,7 +117,7 @@ export function MNISTDigits(props) {
       console.log(proof);
       console.log("classification:");
       console.log(publicSignals);
-      setPublicSignal(publicSignals.slice(0, nselected));
+      setPublicSignal(publicSignals);
       setProof(proof);
       setProofDone(true);
     }
@@ -256,7 +256,7 @@ export function MNISTDigits(props) {
         return (
           <div className="proof">
             <h2>Predictions</h2>
-              {"[" + publicSignal.join(", ") + "]"}
+              {"[" + publicSignal.slice(0, selected.length).join(", ") + "]"}
             <h2>Proof of computation</h2>
             <CopyBlock
               text={JSON.stringify(proof, null, 2)}
