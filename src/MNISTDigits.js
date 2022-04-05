@@ -33,10 +33,12 @@ export function MNISTDigits(props) {
     const size = digSize; // 7x7 array of images to choose from
     const [imgUrl, setImgUrl] = useState([]);
     const [selected, setSelected] = useState([]);
+    const [prediction, setPrediction] = useState([]);
     const [publicSignal, setPublicSignal] = useState([]);
     const [proof, setProof] = useState("");
     const [proofDone, setProofDone] = useState(false)
     const [isVerified, setIsVerified] = useState(false);
+    const [verifyDone, setVerifyDone] = useState(false)
 
     const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0)));
     const [gridChecked, setGridChecked] = useState(Array(size).fill(null).map(_ => Array(size).fill(false)));
@@ -117,7 +119,8 @@ export function MNISTDigits(props) {
       console.log(proof);
       console.log("classification:");
       console.log(publicSignals);
-      setPublicSignal(publicSignals.slice(0, nselected));
+      setPrediction(publicSignals.slice(0, nselected));
+      setPublicSignal(publicSignals);
       setProof(proof);
       setProofDone(true);
     }
@@ -135,7 +138,8 @@ export function MNISTDigits(props) {
           try {
               const result = await verifier.verifyProof(...callArgs)
               console.log('verifier result = ',result)
-              setIsVerified(result)
+              setIsVerified(result);
+              setVerifyDone(true);
           } catch(err) {
               console.log(err)
           }
@@ -212,6 +216,7 @@ export function MNISTDigits(props) {
       setPublicSignal([]);
       setProof("");
       setProofDone(false);
+      setVerifyDone(false);
       setSelected([]);
     }
 
@@ -226,7 +231,7 @@ export function MNISTDigits(props) {
     function VerifyButton () {
         return (
           <button className="button" onClick={doVerify}>
-            Verify (requires wallet connection to blockchain smart contract)
+            Verify
           </button>
         );
     }
@@ -252,10 +257,23 @@ export function MNISTDigits(props) {
       );
     }
 
+    function DisplaySelection() {
+      return (
+          <div className="selectedPanel">
+            <h2>Selected {selected.length} images</h2>
+            <div>
+              {selected.length > 0 ? "[" + selected.join(", ") + "]" : ""}
+            </div>
+          </div>
+      );
+    }
+
     function ProofBlock () {
         return (
           <div className="proof">
             <h2>Predictions</h2>
+              {"[" + prediction.join(", ") + "]"}
+              <h2>Public Signals</h2>
               {"[" + publicSignal.join(", ") + "]"}
             <h2>Proof of computation</h2>
             <CopyBlock
@@ -267,16 +285,13 @@ export function MNISTDigits(props) {
         );
     }
 
-    function DisplaySelection() {
+    function VerifyBlock () {
       return (
-          <div className="selectedPanel">
-            <h2>Selected {selected.length} images</h2>
-            <div>
-              {selected.length > 0 ? "[" + selected.join(", ") + "]" : ""}
-            </div>
-          </div>
+        <div className="proof">
+          <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
+        </div>
       );
-    }
+  }
 
     return (
         <div>
@@ -298,12 +313,10 @@ export function MNISTDigits(props) {
                 </div>
                 <DisplaySelection />
                 {proofDone && ProofBlock()}
+                {verifyDone && VerifyBlock()}
             </div>
 
         </div>
     );
 }
 
-
-
-{/* <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2> */}
