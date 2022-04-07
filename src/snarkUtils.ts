@@ -11,8 +11,10 @@ export const generateProof = async (
       {
         image: image,
       },
-      "http://localhost:3000/circuit.wasm",
-      "http://localhost:3000/circuit_0001.zkey"
+      "./circuit.wasm", // need to copy these two files to same directory, in order to build and deploy
+      "./circuit_0001.zkey"
+      // "http://localhost:3000/circuit.wasm",
+      // "http://localhost:3000/circuit_0001.zkey"
     );
     return { proof, publicSignals };
   };

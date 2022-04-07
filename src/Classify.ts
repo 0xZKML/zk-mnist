@@ -9,7 +9,8 @@ export const doClassify = async (
 
   const session = await InferenceSession.create(
     //"http://localhost:3000/clientmodel.onnx",
-    "http://localhost:3000/clientmodel_bs16.onnx",
+    "./clientmodel_bs16.onnx",// need to copy these two files to same directory, in order to build and deploy
+    // "http://localhost:3000/clientmodel_bs16.onnx",
     {
       executionProviders: ["wasm"],
     }
