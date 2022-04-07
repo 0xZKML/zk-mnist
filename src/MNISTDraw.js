@@ -1,6 +1,5 @@
 import { useState } from 'react'
-// import { matmul, matPlusVec, zeros, vecPlusVec, matByVec, argMax } from './matutils';
-// import { INPUT } from './const';
+import { size, MNISTSIZE } from './config';
 import './MNIST.css';
 import './App.css';
 
@@ -15,7 +14,6 @@ const ONNXOUTPUT = 84; // length 84 vector output from onnx model
 
 function MNISTBoard(props) {
   const [mouseDown, setMouseDown] = useState(false);
-  const size = 28;
 
   function GridSquare(row, col, onChange) {
     function handleChange() {
@@ -29,25 +27,27 @@ function MNISTBoard(props) {
       onChange(row,col)
     }
 
+    function handleMouseUp() {
+      setMouseDown(false);
+    }
+
     return (
       <div className={"square" + (props.grid[row][col] ? " on" : " off")}
       onMouseEnter={() => handleChange()}
       onMouseDown={()=>handleMouseDown()}
+      onMouseUp={()=>handleMouseUp()}
       >
       </div>
     );
   }
 
-  function onSqChange(myrow, mycol) {
-    props.onChange(myrow, mycol)
-  }
 
   // Create column of of GridSquare objects
   function renderCol(col) {
     var mycol = [];
     for (var row=0; row < size; row++) {
       mycol.push(
-        <div>{GridSquare(row, col, onSqChange)}</div>
+        <div>{GridSquare(row, col, props.onChange)}</div>
       );
     }
     return (
@@ -66,14 +66,7 @@ function MNISTBoard(props) {
   }
 
   return (
-    <div className="MNISTBoard"
-      onMouseDown={() => {
-        setMouseDown(true);
-      }}
-      onMouseUp={() => {
-        setMouseDown(false);
-      }}
-    >
+    <div className="MNISTBoard" >
       <div className="centerObject">
         <div className="grid">
           {RenderGrid()}
@@ -91,8 +84,6 @@ export function MNISTDraw() {
   const [publicSignal, setPublicSignal] = useState()
   const [isVerified, setIsVerified] = useState(false);
   const [verifyDone, setVerifyDone] = useState(false)
-  const size = 28;
-  const MNISTSIZE = 784; // TODO: merge constants with MNISTDIGIT constants
   const batchSize = 16;
   const [grid, setGrid] = useState(Array(size).fill(null).map(_ => Array(size).fill(0))); // initialize to a 28x28 array of 0's
 
@@ -102,13 +93,6 @@ export function MNISTDraw() {
 
   async function doProof() {
     var start = performance.now();
-    const session = await InferenceSession.create(
-      // "http://localhost:3000/clientmodel.onnx",
-      "http://localhost:3000/clientmodel_bs16.onnx",
-      {
-        executionProviders: ["wasm"],
-      }
-    );
     // get image from grid
     var imgTensor = Array(batchSize * MNISTSIZE).fill(0);
     for (let i = 0; i < size; i++) {
@@ -143,29 +127,11 @@ export function MNISTDraw() {
     }
   }
 
-  // async function verifyProof() {
-  //   if (typeof window.ethereum !== 'undefined') {
-  //     await requestAccount();
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum)
-  //     const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
-  //     const callArgs = await buildContractCallArgs(proof, publicSignal)
-  //     try {
-  //       const result = await verifier.verifyProof(...callArgs)
-  //       console.log(result)
-  //       setIsVerified(result)
-  //     } catch(err) {
-  //       console.log(err)
-  //     }
-  //   }
-  // }
-
   function resetImage() {
     var newArray = Array(size).fill(null).map(_ => Array(size).fill(0));
     setGrid(newArray);
     setProofDone(false);
-    for (let i = 0; i < imgTensor.length; i++) {
-      imgTensor[i] = 0;
-    }
+    setVerifyDone(false);
   }
 
   function handleSetSquare(myrow,mycol){

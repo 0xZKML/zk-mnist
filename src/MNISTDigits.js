@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {DIGIT} from './mnistpics';
 import './MNIST.css';
 import './App.css';
-import { Tensor, InferenceSession } from "onnxruntime-web";
-import { generateProof, buildContractCallArgs } from "./snarkUtils";
-import { ethers } from 'ethers'
-import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
-import snarkjs from 'snarkjs';
+import { Tensor } from "onnxruntime-web";
+import { generateProof } from "./snarkUtils";
 import { CopyBlock, dracula } from "react-code-blocks";
 import { doClassify } from "./Classify";
 import { verifyProof } from "./MyVerify.js";
-import { verifierAddress, batchSize, MNISTSIZE} from "./config"
-// const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+import { batchSize, MNISTSIZE} from "./config"
 
 export const digSize = 4;
 const randomDigits = randints(0, DIGIT['weight'].length, 16);
@@ -46,9 +42,6 @@ export function MNISTSelect(props) {
     const [gridChecked, setGridChecked] = useState(Array(size).fill(null).map(_ => Array(size).fill(false)));
     const digit = DIGIT.weight;
     const dataURIList = [];
-    // const ONNXOUTPUT = 84;
-    // const batchSize = 16; // saved model can only do 16 batch size
-    // const MNISTSIZE = 784;
     var nrows = 4;
     var ncols = 4;
     var image = [];
@@ -109,7 +102,6 @@ export function MNISTSelect(props) {
         console.log("No images selected");
         return;
       }
-      // const batchSize = 16;
       var nselected = selected.length;
       var imgTensor = getSelectedImages(selected);
       const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batchSize, 1, 28, 28]);
@@ -127,10 +119,6 @@ export function MNISTSelect(props) {
       setProofDone(true);
     }
 
-    async function requestAccount() {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-    }
-
     async function doVerify() {
       const result = await verifyProof(proof, publicSignal)
       if (result!=null) {
@@ -138,26 +126,6 @@ export function MNISTSelect(props) {
         setVerifyDone(true);
       }
     }
-
-    // async function doVerify() {
-    //     if (typeof window.ethereum !== 'undefined') {
-    //       await requestAccount();
-    //       const provider = new ethers.providers.Web3Provider(window.ethereum)
-    //       const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
-    //       const callArgs = await buildContractCallArgs(proof, publicSignal)
-    //       try {
-    //           const result = await verifier.verifyProof(...callArgs)
-    //           console.log('verifier result = ',result)
-    //           setIsVerified(result);
-    //           setVerifyDone(true);
-    //       } catch(err) {
-    //           console.log(err)
-    //       }
-    //     }    
-    //     else {
-    //       alert('Please connect your wallet to the blockchain containing the verifier smart contract')
-    //     }
-    // }
 
     function GridSquare(row, col, onClick) {
         var _id = "imgSquareDigit(" + row + ", " + col + ")";
@@ -174,7 +142,6 @@ export function MNISTSelect(props) {
     function handleSelectDigit(r,c){
       var idx = r*digSize+c;
       image = DIGIT.weight[idx];
-      //doProof();
     }
 
     function onClick(row, col) {

@@ -1,7 +1,7 @@
 // import React from 'react'
 import { Outlet, Link } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MNISTDraw } from "./MNISTBoard.js";
+import { MNISTDraw } from "./MNISTDraw.js";
 import { MNISTSelect } from "./MNISTDigits.js";
 
 export default function App() {
