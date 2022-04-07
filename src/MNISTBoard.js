@@ -1,24 +1,16 @@
-import React, { useState, useRef } from 'react'
-import { matmul, matPlusVec, zeros, vecPlusVec, matByVec, argMax } from './matutils';
-import { INPUT } from './const';
+import { useState } from 'react'
+// import { matmul, matPlusVec, zeros, vecPlusVec, matByVec, argMax } from './matutils';
+// import { INPUT } from './const';
 import './MNIST.css';
 import './App.css';
 
-import { ethers } from 'ethers';
 import { CopyBlock, dracula } from "react-code-blocks";
-import Verifier from './artifacts/contracts/verifier.sol/Verifier.json';
-import snarkjs from 'snarkjs';
 import { generateProof, buildContractCallArgs } from "./snarkUtils";
-import path from 'path';
 import { Tensor, InferenceSession } from "onnxruntime-web";
-import {DIGIT} from './mnistpics';
-import {SNARKLAYER} from './snarklayer';
 import { doClassify } from "./Classify";
-import {verifierAddress, batchSize, MNISTSIZE} from "./config"
 import { verifyProof } from "./MyVerify.js";
 
 
-// const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const ONNXOUTPUT = 84; // length 84 vector output from onnx model
 
 function MNISTBoard(props) {
@@ -91,7 +83,7 @@ function MNISTBoard(props) {
   )
 }
 
-export function MNISTApp() {
+export function MNISTDraw() {
   const [quantizedEmbedding, setQuantizedEmbedding] = useState([])
   const [prediction, setPrediction] = useState([]);
   const [proof, setProof] = useState("")

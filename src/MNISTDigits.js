@@ -31,7 +31,7 @@ function randints(lo, hi, cnt) {
   return nums;
 };
 
-export function MNISTDigits(props) {
+export function MNISTSelect(props) {
     const size = digSize; // array of images to choose from
     const [imgUrl, setImgUrl] = useState([]);
     const [selected, setSelected] = useState([]);

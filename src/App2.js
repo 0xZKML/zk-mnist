@@ -1,8 +1,8 @@
-import React from 'react'
+// import React from 'react'
 import { Outlet, Link } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MNISTApp } from "./MNISTBoard.js";
-import { MNISTDigits } from "./MNISTDigits.js";
+import { MNISTDraw } from "./MNISTBoard.js";
+import { MNISTSelect } from "./MNISTDigits.js";
 
 export default function App() {
   return (
@@ -19,8 +19,8 @@ export default function App() {
       </div>
       <Routes>
         <Route path="/" element={<Home />}/>
-        <Route path="/mnist" element={<MNISTApp />}/>
-        <Route path="/selector" element={<MNISTDigits />}/>
+        <Route path="/mnist" element={<MNISTDraw />}/>
+        <Route path="/selector" element={<MNISTSelect />}/>
         <Route path="/model" element={<ModelDesc />}/>
       </Routes>
     </BrowserRouter>
