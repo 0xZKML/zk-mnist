@@ -14,9 +14,11 @@ import { Tensor, InferenceSession } from "onnxruntime-web";
 import {DIGIT} from './mnistpics';
 import {SNARKLAYER} from './snarklayer';
 import { doClassify } from "./Classify";
+import {verifierAddress, batchSize, MNISTSIZE} from "./config"
+import { verifyProof } from "./MyVerify.js";
 
 
-const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+// const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const ONNXOUTPUT = 84; // length 84 vector output from onnx model
 
 function MNISTBoard(props) {
@@ -91,10 +93,12 @@ function MNISTBoard(props) {
 
 export function MNISTApp() {
   const [quantizedEmbedding, setQuantizedEmbedding] = useState([])
+  const [prediction, setPrediction] = useState([]);
   const [proof, setProof] = useState("")
   const [proofDone, setProofDone] = useState(false)
   const [publicSignal, setPublicSignal] = useState()
   const [isVerified, setIsVerified] = useState(false);
+  const [verifyDone, setVerifyDone] = useState(false)
   const size = 28;
   const MNISTSIZE = 784; // TODO: merge constants with MNISTDIGIT constants
   const batchSize = 16;
@@ -125,21 +129,6 @@ export function MNISTApp() {
     const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batchSize, 1, 28, 28]);
     const {quantizedEmbedding} = await doClassify(nselected,tensor,batchSize)
 
-    // var imgStr = imgTensor.slice(0, 784).join(", ");
-    // console.log("img_str = [" + imgStr + "]");
-    // const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batch, 1, 28, 28]);
-    // console.log('tensor is:');
-    // console.log(tensor);
-    // const feeds: Record<string, Tensor> = {};
-    // feeds[session.inputNames[0]] = tensor;
-    // const results = await session.run(feeds);
-    // var output = results['19']['data']
-    // console.log("output:");
-    // console.log(output.slice(0, 5));
-    // var tempQuantizedEmbedding = new Array(ONNXOUTPUT)
-    // for (var i = 0; i < ONNXOUTPUT; i++)
-    //   tempQuantizedEmbedding[i] = parseInt(output[i].toFixed());
-
     var endTime = performance.now();
     console.log(`Call to doSomething took ${endTime - start} milliseconds`)
 
@@ -147,26 +136,36 @@ export function MNISTApp() {
     const { proof, publicSignals } = await generateProof(quantizedEmbedding)
     var pend = performance.now();
     console.log(`Proof time: ${pend - pstart}ms`);
-    setPublicSignal(publicSignals.slice(0, 1)); // circuit spits out batch result
+    setPrediction(publicSignals[0]);
+    setPublicSignal(publicSignals);
     setProof(proof);
     setProofDone(true);
+
   }
 
-  async function verifyProof() {
-    if (typeof window.ethereum !== 'undefined') {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
-      const callArgs = await buildContractCallArgs(proof, publicSignal)
-      try {
-        const result = await verifier.verifyProof(...callArgs)
-        console.log(result)
-        setIsVerified(result)
-      } catch(err) {
-        console.log(err)
-      }
+  async function doVerify() {
+    const result = await verifyProof(proof, publicSignal)
+    if (result!=null) {
+      setIsVerified(result);
+      setVerifyDone(true);
     }
   }
+
+  // async function verifyProof() {
+  //   if (typeof window.ethereum !== 'undefined') {
+  //     await requestAccount();
+  //     const provider = new ethers.providers.Web3Provider(window.ethereum)
+  //     const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
+  //     const callArgs = await buildContractCallArgs(proof, publicSignal)
+  //     try {
+  //       const result = await verifier.verifyProof(...callArgs)
+  //       console.log(result)
+  //       setIsVerified(result)
+  //     } catch(err) {
+  //       console.log(err)
+  //     }
+  //   }
+  // }
 
   function resetImage() {
     var newArray = Array(size).fill(null).map(_ => Array(size).fill(0));
@@ -185,14 +184,6 @@ export function MNISTApp() {
     setGrid(newArray);
   }
 
-  function ResetButton () {
-    return (
-      <button className="button" onClick={resetImage}>
-        Reset image
-      </button>
-    );
-  }
-
   function ProofButton () {
     return (
       <button className="button" onClick={doProof}>
@@ -201,11 +192,27 @@ export function MNISTApp() {
     );
   }
 
+  function VerifyButton () {
+    return (
+      <button className="button" onClick={doVerify}>
+        Verify
+      </button>
+    );
+  }
+
+  function ResetButton () {
+    return (
+      <button className="button" onClick={resetImage}>
+        Reset image
+      </button>
+    );
+  }
+
   function ProofBlock () {
     return (
       <div className="proof">
-        <h2>Result</h2>
-          Model predicted: {publicSignal}
+        <h2>Prediction</h2>
+        {prediction}
         <h2>Proof of computation</h2>
         <CopyBlock
           text={JSON.stringify(proof, null, 2)}
@@ -215,18 +222,29 @@ export function MNISTApp() {
       </div>
     );
   }
+ 
+  function VerifyBlock () {
+    return (
+      <div className="proof">
+        <h2>Verified by on-chain smart contract: {JSON.stringify(isVerified)}</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="MNISTPage">
       <h2>Draw and classify a digit</h2>
       <div className="container">
         <MNISTBoard grid={grid} onChange={(r,c) => handleSetSquare(r,c)}  />
-        <div className='buttonPanel'>
+
+        <div className="buttonPanel">
           <ProofButton />
+          <VerifyButton />
           <ResetButton />
         </div>
       </div>
       {proofDone && ProofBlock()}
+      {verifyDone && VerifyBlock()}
     </div>
   );
 };

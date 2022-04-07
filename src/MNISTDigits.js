@@ -9,7 +9,9 @@ import Verifier from './artifacts/contracts/verifier.sol/Verifier.json'
 import snarkjs from 'snarkjs';
 import { CopyBlock, dracula } from "react-code-blocks";
 import { doClassify } from "./Classify";
-const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+import { verifyProof } from "./MyVerify.js";
+import { verifierAddress, batchSize, MNISTSIZE} from "./config"
+// const verifierAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 export const digSize = 4;
 const randomDigits = randints(0, DIGIT['weight'].length, 16);
@@ -30,7 +32,7 @@ function randints(lo, hi, cnt) {
 };
 
 export function MNISTDigits(props) {
-    const size = digSize; // 7x7 array of images to choose from
+    const size = digSize; // array of images to choose from
     const [imgUrl, setImgUrl] = useState([]);
     const [selected, setSelected] = useState([]);
     const [prediction, setPrediction] = useState([]);
@@ -44,9 +46,9 @@ export function MNISTDigits(props) {
     const [gridChecked, setGridChecked] = useState(Array(size).fill(null).map(_ => Array(size).fill(false)));
     const digit = DIGIT.weight;
     const dataURIList = [];
-    const ONNXOUTPUT = 84;
-    const batchSize = 16; // saved model can only do 16 batch size
-    const MNISTSIZE = 784;
+    // const ONNXOUTPUT = 84;
+    // const batchSize = 16; // saved model can only do 16 batch size
+    // const MNISTSIZE = 784;
     var nrows = 4;
     var ncols = 4;
     var image = [];
@@ -107,7 +109,7 @@ export function MNISTDigits(props) {
         console.log("No images selected");
         return;
       }
-      const batchSize = 16;
+      // const batchSize = 16;
       var nselected = selected.length;
       var imgTensor = getSelectedImages(selected);
       const tensor = new Tensor('float32', Float32Array.from(imgTensor), [batchSize, 1, 28, 28]);
@@ -130,24 +132,32 @@ export function MNISTDigits(props) {
     }
 
     async function doVerify() {
-        if (typeof window.ethereum !== 'undefined') {
-          await requestAccount();
-          const provider = new ethers.providers.Web3Provider(window.ethereum)
-          const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
-          const callArgs = await buildContractCallArgs(proof, publicSignal)
-          try {
-              const result = await verifier.verifyProof(...callArgs)
-              console.log('verifier result = ',result)
-              setIsVerified(result);
-              setVerifyDone(true);
-          } catch(err) {
-              console.log(err)
-          }
-        }    
-        else {
-          alert('Please connect your wallet to the blockchain containing the verifier smart contract')
-        }
+      const result = await verifyProof(proof, publicSignal)
+      if (result!=null) {
+        setIsVerified(result);
+        setVerifyDone(true);
+      }
     }
+
+    // async function doVerify() {
+    //     if (typeof window.ethereum !== 'undefined') {
+    //       await requestAccount();
+    //       const provider = new ethers.providers.Web3Provider(window.ethereum)
+    //       const verifier = new ethers.Contract(verifierAddress, Verifier.abi, provider)
+    //       const callArgs = await buildContractCallArgs(proof, publicSignal)
+    //       try {
+    //           const result = await verifier.verifyProof(...callArgs)
+    //           console.log('verifier result = ',result)
+    //           setIsVerified(result);
+    //           setVerifyDone(true);
+    //       } catch(err) {
+    //           console.log(err)
+    //       }
+    //     }    
+    //     else {
+    //       alert('Please connect your wallet to the blockchain containing the verifier smart contract')
+    //     }
+    // }
 
     function GridSquare(row, col, onClick) {
         var _id = "imgSquareDigit(" + row + ", " + col + ")";
