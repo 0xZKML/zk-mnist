@@ -1,25 +1,51 @@
 main {
     text-align: center;
-    vertical-align: center;
-    line-height: 100vh;
+    vertical-align: center; line-height: 100vh;
 }
 .vspace {
     min-height: 100px;
+}
+.MNISTPage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 .MNISTBoard {
     /* margin-left: 0cm */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .bigText {
     display: flex;
+    flex-direction: row;
     justify-content: center;
     font-size: 3vw;
 }
+.buttonPanel {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px;
+}
+.selectedPanel {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
 .centerObject {
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 .boardObject {
     /* margin-left: 0cm */
@@ -27,22 +53,32 @@ main {
     /* flex-direction: row; */
     justify-content: center;
 }
+
+.proof {
+  display: flex;
+  flex-direction: column;
+  /*justify-content: center; */
+  align-items: center;
+  text-align: left;
+}
+
 .square {
-      float:left;
+      float:center;
       position: relative;
       width:1vw;
       height:1vw;
       margin:0%;
       background-color:#1E1E1E;
       overflow:hidden;
-      border:1px solid black;
+     border:1px solid black;
 }
+
 .square.off {
       background-color:#FFFFFF;
 }
-  
+
 .imgSquare {
-    float:left;
+    float:center;
     position: relative;
     width:8vw;
     height:8vw;
@@ -50,17 +86,52 @@ main {
     overflow:hidden;
     background-color:#FFFFFF;
 }
+
+.imgSquareDigit {
+    float:center;
+    position: relative;
+    width:12vw;
+    height:12vw;
+    margin:0%;
+    overflow:hidden;
+    background-color:#FFFFFF;
+}
+
+input[type=checkbox] {
+  display: none;
+  box-shadow:none !important;
+}
+
+input[type=checkbox]:checked + label {
+  opacity: 0.5;
+  outline: 0;
+}
+
+:checked + label:before {
+  /* content: "✓"; */  /* TODO: cant figure out how to get this to overlay on top */
+  opacity: 1;
+  background-color: white;
+  outline: 0;
+}
+
+.imgSquareDigit:hover {
+  opacity: 0.5;
+}
+
 .square.on {
-      background-color:#1E1E1E;
+  background-color:#1E1E1E;
 }
 
 .grid {
-      display: flex;
-      flex-direction: row
+  display: flex;
+  flex-direction: row
 }
 
 .button {
     display: flex;
-    text-align: center;
-    font-size: 1.5vw;
+    justify-content: center;
+    align-items: center;
+    font-size: 2vw;
+    flex: 1;
+    margin:10px;
 }

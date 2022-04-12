@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
-import MNISTBoard from './MNISTBoard.js';
+import MNISTBoard from './MNISTDraw.js';
 import MNISTDigits from './MNISTDigits.js';
 
 import { ethers } from 'ethers'

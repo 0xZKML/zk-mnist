@@ -20,7 +20,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface VerifierInterface extends ethers.utils.Interface {
   functions: {
-    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[1])": FunctionFragment;
+    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[16])": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -29,7 +29,24 @@ interface VerifierInterface extends ethers.utils.Interface {
       [BigNumberish, BigNumberish],
       [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       [BigNumberish, BigNumberish],
-      [BigNumberish]
+      [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ]
     ]
   ): string;
 
@@ -89,15 +106,49 @@ export class Verifier extends Contract {
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<[boolean] & { r: boolean }>;
 
-    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[1])"(
+    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[16])"(
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<[boolean] & { r: boolean }>;
   };
@@ -106,15 +157,49 @@ export class Verifier extends Contract {
     a: [BigNumberish, BigNumberish],
     b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
     c: [BigNumberish, BigNumberish],
-    input: [BigNumberish],
+    input: [
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ],
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[1])"(
+  "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[16])"(
     a: [BigNumberish, BigNumberish],
     b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
     c: [BigNumberish, BigNumberish],
-    input: [BigNumberish],
+    input: [
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ],
     overrides?: CallOverrides
   ): Promise<boolean>;
 
@@ -123,15 +208,49 @@ export class Verifier extends Contract {
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[1])"(
+    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[16])"(
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<boolean>;
   };
@@ -143,15 +262,49 @@ export class Verifier extends Contract {
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[1])"(
+    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[16])"(
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -161,15 +314,49 @@ export class Verifier extends Contract {
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[1])"(
+    "verifyProof(uint256[2],uint256[2][2],uint256[2],uint256[16])"(
       a: [BigNumberish, BigNumberish],
       b: [[BigNumberish, BigNumberish], [BigNumberish, BigNumberish]],
       c: [BigNumberish, BigNumberish],
-      input: [BigNumberish],
+      input: [
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish
+      ],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
