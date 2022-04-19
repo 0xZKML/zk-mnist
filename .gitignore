@@ -11,3 +11,6 @@ artifacts
 verification_key.json
 proof.json
 zk/circom
+
+# Local Netlify folder
+.netlify

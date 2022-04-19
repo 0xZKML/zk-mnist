@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import * as snarkjs from "snarkjs";
-import builder from "./circuit_js/witness_calculator";
+import {builder} from "./circuit_js/witness_calculator.js";
 
 export const generateProof = async (
     image: number[][]
@@ -11,9 +11,13 @@ export const generateProof = async (
       {
         image: image,
       },
-      "http://localhost:3000/circuit.wasm",
-      "http://localhost:3000/circuit_0001.zkey"
+      // "http://localhost:3000/circuit.wasm",
+      // "http://localhost:3000/circuit_0001.zkey"
+      "./circuit.wasm",
+      "./circuit_0001.zkey"
     );
+    console.log('load the .wask and .zkey resources')
+
     return { proof, publicSignals };
   };
 

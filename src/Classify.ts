@@ -9,11 +9,13 @@ export const doClassify = async (
 
   const session = await InferenceSession.create(
     //"http://localhost:3000/clientmodel.onnx",
-    "http://localhost:3000/clientmodel_bs16.onnx",
+    // "http://localhost:3000/clientmodel_bs16.onnx",
+    "./clientmodel_bs16.onnx",
     {
       executionProviders: ["wasm"],
     }
   );
+  console.log('load the .onnx resource')
 
   const feeds: Record<string, Tensor> = {};
   feeds[session.inputNames[0]] = tensor;

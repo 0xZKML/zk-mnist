@@ -1,0 +1,2 @@
+(this.webpackJsonpzkmnistt=this.webpackJsonpzkmnistt||[]).push([[18],{432:function(t,a,e){"use strict";function n(t){t.languages.brainfuck={pointer:{pattern:/<|>/,alias:"keyword"},increment:{pattern:/\+/,alias:"inserted"},decrement:{pattern:/-/,alias:"deleted"},branching:{pattern:/\[|\]/,alias:"important"},operator:/[.,]/,comment:/\S+/}}t.exports=n,n.displayName="brainfuck",n.aliases=[]}}]);
+//# sourceMappingURL=react-syntax-highlighter_languages_refractor_brainfuck.8b499d03.chunk.js.map

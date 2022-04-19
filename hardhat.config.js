@@ -3,6 +3,8 @@ require("hardhat-typechain");
 
 require("hardhat-circom");
 
+// require('dotenv').config();
+
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -29,6 +31,13 @@ module.exports = {
     hardhat: {
       chainId: 1337,
     },
+
+    // goerli: {
+    //   url: "https://goerli.infura.io/v3/"+process.env.GOERLI_PROJECTID,
+    //   accounts: [process.env.a2key]
+    // },
+
+
     // ropsten: {
     //   url: "https://ropsten.infura.io/v3/projectid",
     //   accounts: [process.env.a2key]
