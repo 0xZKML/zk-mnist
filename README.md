@@ -3,8 +3,8 @@
 zk-MNIST: web frontend app + Jupyter notebook with ML model generation
 Authors: @horacepan @sunfishstanford @henripal
 
-You can play with the webapp demo at: https://zkmldemo.netlify.app/
-(Note: mobile browsers not supported; wallet connected to Ropsten testnet required to demonstrate ZK verifier.)
+You can play with the webapp demo at: https://zkmnist.netlify.app/
+(Note: mobile browsers not supported; wallet connected to Goerli testnet required to demonstrate ZK verifier.)
 Tutorial blog post: https://hackmd.io/Y7Y79_MtSoKdHNAEfZRXUg
 
 
@@ -38,7 +38,7 @@ Prerequisites: global install of circom 2.0
 8) switch to another terminal
 9) deploy the smart contract ` npx hardhat run scripts/deploy.js --network localhost`
 10) make a note of where the contract address has been deployed
-11) edit `verifierAddress` in `./src/App.js`
+11) edit `verifierAddress` in `./src/config.js`
 12) start web app `npm start`
 
 ## Development loop:
